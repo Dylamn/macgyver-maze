@@ -1,0 +1,11 @@
+__pycache__
+
+# IDE folders
+.idea/
+.vscode/
+
+# Environments
+.env
+env/
+venv/
+.venv/
