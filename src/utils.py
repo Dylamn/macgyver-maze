@@ -27,6 +27,7 @@ def base_path(relpath=""):
 
 
 def get_screen_size():
+    """Retrieve the last registered screen size in the settings file."""
     size = [int(values) for values in settings('Interface', key='size').split('x')]
 
     return tuple(size)

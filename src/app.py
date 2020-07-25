@@ -5,8 +5,9 @@ from src.utils import *
 from src.Maze import Maze
 from src.Macgyver import Macgyver
 
-# Constants
-CAPTION = "MacGyver Maze"
+# Game constants
+MAZE_PATTERN_FILE = 'maze.txt'
+CAPTION = 'MacGyver Maze'
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
@@ -22,8 +23,8 @@ class App:
         self.screen_size = size
 
         # Inject dependencies.
-        self.macgyver = Macgyver()
-        self.maze = Maze()
+        self.maze = Maze(MAZE_PATTERN_FILE)
+        self.macgyver = Macgyver(self.maze.start)
 
         self._init()
 
@@ -32,9 +33,6 @@ class App:
         pygame.init()
 
         self.screen = pygame.display.set_mode(self.screen_size)
-
-        # Place MacGyver on the starting point.
-        self.macgyver.rect.x, self.macgyver.rect.y = self.maze.start
 
         pygame.display.set_caption(CAPTION)
         self._running = True

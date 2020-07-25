@@ -1,14 +1,17 @@
 import unittest
 
-from src.Macgyver import MacGyver
+from src.Macgyver import Macgyver
 
 
-class MyTestCase(unittest.TestCase):
-    def test_speed(self):
-        macgyver = MacGyver()
+class MacGyverTestCase(unittest.TestCase):
+    def test_moves(self):
+        # Place Macgyver on the origin.
+        macgyver = Macgyver((0, 0))
 
-        self.assertEqual(macgyver.SPEED.get('X'), (1, 0))
-        self.assertEqual(macgyver.SPEED.get('Y'), (0, 1))
+        self.assertEqual(macgyver.coordinates, (0, 0))
+        macgyver.move_down()
+
+        self.assertEqual(macgyver.coordinates, (0, 20))
 
 
 if __name__ == '__main__':
