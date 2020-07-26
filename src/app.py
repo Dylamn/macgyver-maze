@@ -13,6 +13,10 @@ WHITE = (255, 255, 255)
 
 
 class App:
+    # Scale must be dynamic if resizable is available.
+    scale = (20, 20)
+
+    # Screen attributes
     screen = None
     screen_size = None
 
@@ -21,10 +25,11 @@ class App:
     def __init__(self, size=(720, 480)):
         """Initialize the game/application."""
         self.screen_size = size
+        self.scale = tuple(round(num / 15) for num in size)
 
         # Inject dependencies.
-        self.maze = Maze(MAZE_PATTERN_FILE)
-        self.macgyver = Macgyver(self.maze.start)
+        self.maze = Maze(self.scale, MAZE_PATTERN_FILE)
+        self.macgyver = Macgyver(self.maze.start, self.scale)
 
         self._init()
 
@@ -67,8 +72,8 @@ class App:
     def render(self):
         """Render the grid once at the beginning."""
         self.screen.fill(BLACK)
-        self.maze.draw(self.screen)  # TODO: Give a grid instead of the screen and then blit the grid ?
-        self.screen.blit(self.macgyver.image, self.macgyver.rect)
+        self.maze.draw(self.screen, self.scale)
+        self.screen.blit(self.macgyver.image, self.macgyver.rect.topleft)
         pygame.display.flip()
 
     @staticmethod
@@ -91,7 +96,9 @@ class App:
         self.on_cleanup()
 
 
-if __name__ == '__main__':
+def main():
+    """Bootstrap the game."""
+
     # Default size of the screen as a tuple.
     window_size = get_screen_size()
 
@@ -100,3 +107,7 @@ if __name__ == '__main__':
 
     # Then execute the game loop.
     app.execute()
+
+
+if __name__ == '__main__':
+    main()

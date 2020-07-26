@@ -2,13 +2,39 @@ from os import path
 import configparser
 
 
-def settings(section=None, key=None):
-    """Get a value from the settings.ini file"""
+def settings(section=None, option=None):
+    """Get a value from the config file.
+
+    If none exist, create a option with the default value of 720x480
+    """
+
+    path_to_ini = base_path(r'settings.ini')
+
     config = configparser.ConfigParser()
 
-    config.read(base_path(r'settings.ini'))
+    config.read(path_to_ini)
 
-    return config[section][key]
+    try:
+        return config[section][option]
+    except KeyError:
+        default_size = '720x480'
+
+        with open(path_to_ini, 'w') as configfile:
+            write_config(config, configfile, default_size)
+
+        return config[section][option]
+
+
+def write_config(config, file, size):
+    """Write options in the config file."""
+    if not config.has_section('Interface'):
+        config.add_section('Interface')
+
+    config['Interface'] = {
+        'size': size
+    }
+
+    config.write(file)
 
 
 def asset(relpath=""):
@@ -28,6 +54,6 @@ def base_path(relpath=""):
 
 def get_screen_size():
     """Retrieve the last registered screen size in the settings file."""
-    size = [int(values) for values in settings('Interface', key='size').split('x')]
+    size = [int(values) for values in settings('Interface', option='size').split('x')]
 
     return tuple(size)
