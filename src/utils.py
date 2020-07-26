@@ -17,7 +17,7 @@ def settings(section=None, option=None):
     try:
         return config[section][option]
     except KeyError:
-        default_size = '720x480'
+        default_size = '720x720'
 
         with open(path_to_ini, 'w') as configfile:
             write_config(config, configfile, default_size)

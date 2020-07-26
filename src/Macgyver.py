@@ -17,7 +17,7 @@ class Macgyver(sprite.Sprite):
     DOWN = (0, 20)
     LEFT = (-20, 0)
 
-    def __init__(self, start, scale):
+    def __init__(self, start: tuple, scale: tuple):
         """MacGyver default constructor."""
         super().__init__()
 
@@ -29,6 +29,9 @@ class Macgyver(sprite.Sprite):
 
         # Place MacGyver on the starting point.
         self.rect.topleft = tuple(point * scaling for point, scaling in zip(start, scale))
+
+        # Scale the moves directions of MacGyver.
+        self._set_scale_moves(scale)
 
     @property
     def coordinates(self):
@@ -50,3 +53,13 @@ class Macgyver(sprite.Sprite):
     def move_left(self):
         """Move MacGyver to the left."""
         self.rect = self.rect.move(self.LEFT)
+
+    def _set_scale_moves(self, scale: tuple):
+        """Updates MacGyver's Motion Scale to match the screen scale."""
+        x_scale = scale[0]
+        y_scale = scale[1]
+
+        self.UP = (0, -y_scale)
+        self.DOWN = (0, y_scale)
+        self.LEFT = (-x_scale, 0)
+        self.RIGHT = (x_scale, 0)

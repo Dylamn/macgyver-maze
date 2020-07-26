@@ -14,7 +14,8 @@ WHITE = (255, 255, 255)
 
 class App:
     # Scale must be dynamic if resizable is available.
-    scale = (20, 20)
+    # A specific event handler will manage that.
+    scale = None
 
     # Screen attributes
     screen = None
@@ -22,7 +23,7 @@ class App:
 
     _running = False  # Determine whether the game is running or not.
 
-    def __init__(self, size=(720, 480)):
+    def __init__(self, size=(720, 720)):
         """Initialize the game/application."""
         self.screen_size = size
         self.scale = tuple(round(num / 15) for num in size)
@@ -87,6 +88,7 @@ class App:
             pygame.event.pump()
             event = pygame.event.wait()
 
+            # Send events to the handler.
             self.on_event(event)
 
             self.on_loop()
