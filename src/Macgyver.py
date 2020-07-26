@@ -17,15 +17,18 @@ class Macgyver(sprite.Sprite):
     DOWN = (0, 20)
     LEFT = (-20, 0)
 
-    def __init__(self, start):
+    def __init__(self, start, scale):
         """MacGyver default constructor."""
         super().__init__()
 
         self.image = pygame.image.load(asset(self.MAC_GYVER))
+
+        self.image = pygame.transform.scale(self.image, scale)
+
         self.rect = self.image.get_rect()  # Represent the hitbox and the position of MacGyver.
 
         # Place MacGyver on the starting point.
-        self.rect.topleft = start
+        self.rect.topleft = tuple(point * scaling for point, scaling in zip(start, scale))
 
     @property
     def coordinates(self):
