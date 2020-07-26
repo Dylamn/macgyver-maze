@@ -24,23 +24,24 @@ class Maze:
         self.start = self.find_points('S')
         self.end = self.find_points('F')
 
-    def draw(self, screen, scale):
-        for x, rows in enumerate(self.grid):
-            for y, tile in enumerate(rows):
-                print(self.wall)
+    def draw(self, screen, scale: tuple):
+        """Draw the maze grid."""
+        width, height = scale
 
-                print(f'coords: {(y * scale[0], x * scale[1])}')
+        for y, rows in enumerate(self.grid):
+            for x, tile in enumerate(rows):
+
                 if tile == "#":
-                    screen.blit(self.wall, (y * scale[0], x * scale[1]))
+                    screen.blit(self.wall, (x * width, y * height))
                 else:
-                    screen.blit(self.floor, (y * scale[0], x * scale[1]))
+                    screen.blit(self.floor, (x * width, y * height))
 
-    def find_points(self, wanted):
+    def find_points(self, wanted: str):
         """Find the coordinates of the specified point (start or end)"""
-        for x, rows in enumerate(self.grid):
-            for y, tile in enumerate(rows):
+        for y, rows in enumerate(self.grid):
+            for x, tile in enumerate(rows):
                 if tile == wanted:
-                    return y, x
+                    return x, y
 
     def parse_maze_pattern(self):
         """Populate the maze grid by reading the maze file pattern."""
