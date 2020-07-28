@@ -1,18 +1,21 @@
 import pygame
 
 from src.utils import asset, base_path
+from src.wall import Wall
+from src.floor import Floor
 
 
 class Maze:
     grid = []
 
-    def __init__(self, scale, file_pattern='maze.txt'):
-        self.wall_original = pygame.image.load(asset('wall.png'))
-        self.wall = pygame.transform.scale(self.wall_original, scale)
-        # self.walls = pygame.sprite.Group()
+    def __init__(self, scale, walls: pygame.sprite.Group, floors: pygame.sprite.Group, file_pattern='maze.txt'):
+        # Add references to the Maze class. Maybe useless,
+        # I let them here for the moment.
+        self.wall_container = walls
+        self.floor_container = floors
 
-        self.floor_original = pygame.image.load(asset('floor.png'))
-        self.floor = pygame.transform.scale(self.floor_original, scale)
+        # Set a scale attribute that will be used by floors and walls.
+        self.scale = scale
 
         self.M = 15  # Number of columns
         self.N = 15  # Number of rows
@@ -24,22 +27,22 @@ class Maze:
         self.start = self.find_points('S')
         self.end = self.find_points('F')
 
-    def draw(self, screen, scale: tuple):
-        """Draw the maze grid."""
-        width, height = scale
+        self._init()
 
-        for y, rows in enumerate(self.grid):
-            for x, tile in enumerate(rows):
+    def _init(self):
+        """Setup the maze grid."""
+        for y, columns in enumerate(self.grid):
+            for x, tile in enumerate(columns):
 
                 if tile == "#":
-                    screen.blit(self.wall, (x * width, y * height))
+                    self.wall_container.add(Wall(x, y, self.scale))
                 else:
-                    screen.blit(self.floor, (x * width, y * height))
+                    self.floor_container.add(Floor(x, y, self.scale))
 
     def find_points(self, wanted: str):
         """Find the coordinates of the specified point (start or end)"""
-        for y, rows in enumerate(self.grid):
-            for x, tile in enumerate(rows):
+        for y, columns in enumerate(self.grid):
+            for x, tile in enumerate(columns):
                 if tile == wanted:
                     return x, y
 

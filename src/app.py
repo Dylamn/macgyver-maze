@@ -3,6 +3,8 @@ from pygame.locals import *
 
 from src.utils import *
 from src.Maze import Maze
+from src.wall import Wall
+from src.floor import Floor
 from src.Macgyver import Macgyver
 
 # Game constants
@@ -28,8 +30,19 @@ class App:
         self.screen_size = size
         self.scale = tuple(round(num / 15) for num in size)
 
+        # Initialize Game Groups
+        self.characters = pygame.sprite.Group()
+        self.walls = pygame.sprite.Group()
+        self.floors = pygame.sprite.Group()
+        self.sprites = pygame.sprite.RenderUpdates()
+
+        # Assign default groups to each Sprite class.
+        Macgyver.containers = self.sprites
+        Wall.containers = self.sprites, self.walls
+        Floor.containers = self.sprites, self.floors
+
         # Inject dependencies.
-        self.maze = Maze(self.scale, MAZE_PATTERN_FILE)
+        self.maze = Maze(self.scale, self.walls, self.floors, file_pattern=MAZE_PATTERN_FILE)
         self.macgyver = Macgyver(self.maze.start, self.scale)
 
         self._init()
@@ -67,15 +80,17 @@ class App:
                 self._running = False
 
     def on_loop(self):
-        """Make specific actions ?"""
-        pass
+        """Perform checks, such as checking for colliding sprites."""
+        if pygame.sprite.spritecollide(self.macgyver, self.walls, 0):
+            self.macgyver.rollback()
 
     def render(self):
-        """Render the grid once at the beginning."""
+        """Make the render of the game."""
         self.screen.fill(BLACK)
-        self.maze.draw(self.screen, self.scale)
-        self.screen.blit(self.macgyver.image, self.macgyver.rect.topleft)
-        pygame.display.flip()
+        dirty = self.sprites.draw(self.screen)
+
+        # Only update sprites, not the whole screen.
+        pygame.display.update(dirty)
 
     @staticmethod
     def on_cleanup():
