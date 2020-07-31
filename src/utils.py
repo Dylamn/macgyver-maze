@@ -44,12 +44,12 @@ def asset(relpath=""):
     assert path.isfile(asset_path), "The path doesn't indicate a file"
     assert path.exists(asset_path), "Given file doesn't exists."
 
-    return path.realpath(f'../resources/{relpath}')
+    return path.realpath(f'resources/{relpath}')
 
 
 def base_path(relpath=""):
     """Get the path to the base of the project."""
-    return path.realpath(f'../{relpath}')
+    return path.realpath(f'{relpath}')
 
 
 def get_screen_size():

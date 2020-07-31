@@ -13,7 +13,7 @@ class Wall(sprite.Sprite):
         super().__init__(self.containers)
 
         # image property is reserved for the scaled image.
-        self.original_img = pygame.image.load(asset('wall.png')).convert()
+        self.original_img = pygame.image.load(asset('wall.png'))
 
         # Scaled image must be assigned to the image attribute.
         self.image = pygame.transform.scale(self.original_img, scale)
