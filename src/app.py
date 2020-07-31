@@ -6,6 +6,7 @@ from src.Maze import Maze
 from src.wall import Wall
 from src.floor import Floor
 from src.Macgyver import Macgyver
+from src.guardian import Guardian
 
 # Game constants
 MAZE_PATTERN_FILE = 'maze.txt'
@@ -31,19 +32,21 @@ class App:
         self.scale = tuple(round(num / 15) for num in size)
 
         # Initialize Game Groups
-        self.characters = pygame.sprite.Group()
+        self.characters = pygame.sprite.GroupSingle()
         self.walls = pygame.sprite.Group()
         self.floors = pygame.sprite.Group()
         self.sprites = pygame.sprite.RenderUpdates()
 
         # Assign default groups to each Sprite class.
         Macgyver.containers = self.sprites
+        Guardian.containers = self.sprites, self.characters
         Wall.containers = self.sprites, self.walls
         Floor.containers = self.sprites, self.floors
 
         # Inject dependencies.
         self.maze = Maze(self.scale, self.walls, self.floors, file_pattern=MAZE_PATTERN_FILE)
         self.macgyver = Macgyver(self.maze.start, self.scale)
+        self.guardian = Guardian(self.maze.end, self.scale)
 
         self._init()
 
@@ -81,8 +84,16 @@ class App:
 
     def on_loop(self):
         """Perform checks, such as checking for colliding sprites."""
+
+        # Check if MacGyver threw himself against a wall...
         if pygame.sprite.spritecollide(self.macgyver, self.walls, 0):
             self.macgyver.rollback()
+
+        # Check if MacGyver hit the Guardian
+        if self.macgyver.rect.colliderect(self.guardian.rect):
+            self.macgyver.kill()
+            print('You die. Sad story !')
+            self._running = False
 
     def render(self):
         """Make the render of the game."""
