@@ -1,5 +1,6 @@
 from os import path
 import configparser
+from pathlib import Path
 
 
 def settings(section=None, option=None):
@@ -41,15 +42,26 @@ def asset(relpath=""):
     """Generate an asset path."""
     asset_path = base_path(f'resources/{relpath}')
 
-    assert path.isfile(asset_path), "The path doesn't indicate a file"
+    assert path.isfile(asset_path), f"The path doesn't indicate a file. Given: {asset_path}"
     assert path.exists(asset_path), "Given file doesn't exists."
 
-    return path.realpath(f'../resources/{relpath}')
+    return path.realpath(f'resources/{relpath}')
 
 
 def base_path(relpath=""):
-    """Get the path to the base of the project."""
-    return path.realpath(f'../{relpath}')
+    """Get the path to the base of the project.
+
+    :param relpath relative path to a file, dir...
+    """
+    project_path = Path(path.realpath(''))
+
+    if not project_path.name.endswith('macgyver-maze'):
+        parent = project_path.parent
+
+        while not parent.name.endswith('macgyver-maze'):
+            parent = parent.parent
+
+    return project_path.joinpath(relpath)
 
 
 def get_screen_size():
@@ -57,3 +69,8 @@ def get_screen_size():
     size = [int(values) for values in settings('Interface', option='size').split('x')]
 
     return tuple(size)
+
+
+def scale_position(pos: tuple, scale: tuple):
+    """Returns the mapped position of the maze coordinates for the screen."""
+    return tuple(point * scaling for point, scaling in zip(pos, scale))

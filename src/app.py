@@ -1,9 +1,11 @@
 import pygame
 from pygame.locals import *
 
-from src.utils import *
-from src.Maze import Maze
-from src.Macgyver import Macgyver
+from src.maze import Maze
+from src.wall import Wall
+from src.floor import Floor
+from src.macgyver import Macgyver
+from src.guardian import Guardian
 
 # Game constants
 MAZE_PATTERN_FILE = 'maze.txt'
@@ -28,9 +30,22 @@ class App:
         self.screen_size = size
         self.scale = tuple(round(num / 15) for num in size)
 
+        # Initialize Game Groups
+        self.characters = pygame.sprite.GroupSingle()
+        self.walls = pygame.sprite.Group()
+        self.floors = pygame.sprite.Group()
+        self.sprites = pygame.sprite.RenderUpdates()
+
+        # Assign default groups to each Sprite class.
+        Macgyver.containers = self.sprites
+        Guardian.containers = self.sprites, self.characters
+        Wall.containers = self.sprites, self.walls
+        Floor.containers = self.sprites, self.floors
+
         # Inject dependencies.
-        self.maze = Maze(self.scale, MAZE_PATTERN_FILE)
+        self.maze = Maze(self.scale, file_pattern=MAZE_PATTERN_FILE)
         self.macgyver = Macgyver(self.maze.start, self.scale)
+        self.guardian = Guardian(self.maze.end, self.scale)
 
         self._init()
 
@@ -67,22 +82,31 @@ class App:
                 self._running = False
 
     def on_loop(self):
-        """Make specific actions ?"""
-        pass
+        """Perform checks, such as checking for colliding sprites."""
+
+        # Check if MacGyver threw himself against a wall...
+        if pygame.sprite.spritecollide(self.macgyver, self.walls, False):
+            self.macgyver.rollback()
+
+        # Check if MacGyver hit the Guardian
+        if self.macgyver.rect.colliderect(self.guardian.rect):
+            self.macgyver.kill()
+            print('You die. Sad story !')
+            self._running = False
 
     def render(self):
-        """Render the grid once at the beginning."""
-        self.screen.fill(BLACK)
-        self.maze.draw(self.screen, self.scale)
-        self.screen.blit(self.macgyver.image, self.macgyver.rect.topleft)
-        pygame.display.flip()
+        """Make the render of the game."""
+        dirty = self.sprites.draw(self.screen)
+
+        # Only update sprites, not the whole screen.
+        pygame.display.update(dirty)
 
     @staticmethod
     def on_cleanup():
         pygame.quit()
 
     def execute(self):
-        """Execute the game."""
+        """Execute the game loop."""
 
         while self._running:
             pygame.event.pump()
@@ -91,25 +115,15 @@ class App:
             # Send events to the handler.
             self.on_event(event)
 
+            # Perform checks about walls and items.
             self.on_loop()
 
+            # Render sprites.
             self.render()
 
+            # MacGyver's in front of the guardian.
+            if self.macgyver.rect in self.guardian.adjacent_tiles:
+                # Calculates whether MacGyver will die or put the guardian to sleep.
+                self._running = self.guardian.sleep_or_kill(self.macgyver)
+
         self.on_cleanup()
-
-
-def main():
-    """Bootstrap the game."""
-
-    # Default size of the screen as a tuple.
-    window_size = get_screen_size()
-
-    # Initialize the game.
-    app = App(size=window_size)
-
-    # Then execute the game loop.
-    app.execute()
-
-
-if __name__ == '__main__':
-    main()
