@@ -1,5 +1,5 @@
 ###############
-# #   #   #  S#
+# #   #   #  X#
 #    ## #   ###
 ####  # ### # #
 #  #     #    #
@@ -10,6 +10,26 @@
 #     #   # # #
 # ####  # ### #
 # #    #  #   #
-#   # ##  # # #
+#   # ##S # # #
 #  #  #  #    #
 #######F#######
+
+; Comments section (Those lines will be ignored in the parsing process.)
+; A few informations about each characters
+;
+; First, the characters "#", "S", "F" and "I" are reserved and required for the application to work.
+; See what's they represents below:
+;
+; "#" character represents a wall.
+;
+; "S" character represents the starting point of MacGyver.
+;
+; "F" character represents the finish point.
+;     The Guardian will be placed at this point. It's also the exit where MacGyver must go.
+;
+; "I" character represents an item.
+;     This character will be placed randomly inside the maze at the generation of this one.
+;
+;
+; " " The space represents the ground where MacGyver can move.
+;     You can replace spaces with any other character, except reserved characters.

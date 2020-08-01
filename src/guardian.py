@@ -1,7 +1,8 @@
 import pygame.sprite as sprite
+import pygame.rect as pyrect
 import pygame.image
-
-from src.utils import asset
+from operator import sub
+from src.utils import asset, scale_position
 
 
 class Guardian(sprite.Sprite):
@@ -20,16 +21,24 @@ class Guardian(sprite.Sprite):
         if containers:
             self.containers = containers
 
+        # Call the parent constructor.
         super().__init__(self.containers)
 
-        self.image = pygame.image.load(asset(self.GUARDIAN))
+        # The original graphic representation of the Guardian.
+        self.original_img = pygame.image.load(asset(self.GUARDIAN))
 
-        self.image = pygame.transform.scale(self.image, scale)
+        # Scaled graphic representation of the Guardian.
+        self.image = pygame.transform.scale(self.original_img, scale)
 
-        self.rect = self.image.get_rect()  # Represent the hitbox and the position of the Guardian.
+        # Represent the hitbox and the position of the Guardian.
+        self.rect = self.image.get_rect()
 
         # Place the Guardian on the ending point.
-        self.rect.topleft = tuple(point * scaling for point, scaling in zip(end, scale))
+        self.rect.topleft = scale_position(end, scale)
+
+        # Find the adjacent Guardian tiles where MacGyver will lose
+        # if he doesn't have the required items while on one of these squares.
+        self.adjacent_tiles = self.find_adjacent_tiles(scale)
 
     @property
     def coordinates(self):
@@ -39,3 +48,29 @@ class Guardian(sprite.Sprite):
     @coordinates.setter
     def coordinates(self, value):
         self.rect.topleft = value
+
+    def find_adjacent_tiles(self, scale):
+        width, height = scale
+
+        adjacent_top = pyrect.Rect(tuple(map(sub, self.coordinates, (0, -height))), (width, height))
+        adjacent_down = pyrect.Rect(tuple(map(sub, self.coordinates, (0, height))), (width, height))
+        adjacent_left = pyrect.Rect(tuple(map(sub, self.coordinates, (-width, 0))), (width, height))
+        adjacent_right = pyrect.Rect(tuple(map(sub, self.coordinates, (width, 0))), (width, height))
+
+        return [adjacent_top, adjacent_right, adjacent_down, adjacent_left]
+
+    def _sleep(self):
+        """The guardian will sleep, we can erase him from the display."""
+        self.kill()
+
+    def sleep_or_kill(self, macgyver):
+        if macgyver.inventory:
+            self._sleep()
+
+            # Return True to indicate to the app to continue.
+            return True
+        else:
+            macgyver.kill()
+
+            # Return False to indicate to the app to stop running.
+            return False

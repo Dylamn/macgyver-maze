@@ -1,6 +1,6 @@
 import unittest
 
-from src.Macgyver import Macgyver
+from src.macgyver import Macgyver
 
 
 class MacGyverTestCase(unittest.TestCase):

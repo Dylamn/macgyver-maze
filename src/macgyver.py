@@ -1,7 +1,7 @@
 import pygame.sprite as sprite
 import pygame.image
 
-from src.utils import asset
+from src.utils import asset, scale_position
 
 
 class Macgyver(sprite.Sprite):
@@ -27,20 +27,29 @@ class Macgyver(sprite.Sprite):
         if containers:
             self.containers = containers
 
+        # Call the parent constructor.
         super().__init__(self.containers)
 
-        self.image = pygame.image.load(asset(self.MAC_GYVER))
+        # The original graphic representation of MacGyver.
+        self.original_img = pygame.image.load(asset(self.MAC_GYVER))
 
-        self.image = pygame.transform.scale(self.image, scale)
+        # Scaled graphic representation of MacGyver.
+        self.image = pygame.transform.scale(self.original_img, scale)
 
-        self.rect = self.image.get_rect()  # Represent the hitbox and the position of MacGyver.
+        # Represent the hitbox and the position of MacGyver.
+        self.rect = self.image.get_rect()
 
         # Place MacGyver on the starting point.
-        self.rect.topleft = tuple(point * scaling for point, scaling in zip(start, scale))
+        self.rect.topleft = scale_position(start, scale)
 
         # Scale the moves directions of MacGyver.
         self._set_scale_moves(scale)
         self._old_coordinates = (0, 0)
+
+        # Represent the inventory of MacGyver where the items will be stored.
+        # This inventory must be filled with the three needed items in order
+        # to put the guardian in sleep.
+        self.inventory = []
 
     @property
     def coordinates(self):
@@ -49,6 +58,7 @@ class Macgyver(sprite.Sprite):
 
     @coordinates.setter
     def coordinates(self, value):
+        """Set MacGyver's new coordinates."""
         self.rect.topleft = value
 
     def rollback(self):
@@ -77,10 +87,12 @@ class Macgyver(sprite.Sprite):
 
     def _set_scale_moves(self, scale: tuple):
         """Updates MacGyver's Motion Scale to match the screen scale."""
-        x_scale = scale[0]
-        y_scale = scale[1]
 
-        self.UP = (0, -y_scale)
-        self.DOWN = (0, y_scale)
-        self.LEFT = (-x_scale, 0)
-        self.RIGHT = (x_scale, 0)
+        # width is the x axis, height the y axis.
+        width, height = scale
+
+        # Set the scale step of each directions.
+        self.UP = (0, -height)
+        self.DOWN = (0, height)
+        self.LEFT = (-width, 0)
+        self.RIGHT = (width, 0)

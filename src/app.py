@@ -1,11 +1,10 @@
 import pygame
 from pygame.locals import *
 
-from src.utils import *
-from src.Maze import Maze
+from src.maze import Maze
 from src.wall import Wall
 from src.floor import Floor
-from src.Macgyver import Macgyver
+from src.macgyver import Macgyver
 from src.guardian import Guardian
 
 # Game constants
@@ -44,7 +43,7 @@ class App:
         Floor.containers = self.sprites, self.floors
 
         # Inject dependencies.
-        self.maze = Maze(self.scale, self.walls, self.floors, file_pattern=MAZE_PATTERN_FILE)
+        self.maze = Maze(self.scale, file_pattern=MAZE_PATTERN_FILE)
         self.macgyver = Macgyver(self.maze.start, self.scale)
         self.guardian = Guardian(self.maze.end, self.scale)
 
@@ -86,7 +85,7 @@ class App:
         """Perform checks, such as checking for colliding sprites."""
 
         # Check if MacGyver threw himself against a wall...
-        if pygame.sprite.spritecollide(self.macgyver, self.walls, 0):
+        if pygame.sprite.spritecollide(self.macgyver, self.walls, False):
             self.macgyver.rollback()
 
         # Check if MacGyver hit the Guardian
@@ -97,7 +96,6 @@ class App:
 
     def render(self):
         """Make the render of the game."""
-        self.screen.fill(BLACK)
         dirty = self.sprites.draw(self.screen)
 
         # Only update sprites, not the whole screen.
@@ -108,7 +106,7 @@ class App:
         pygame.quit()
 
     def execute(self):
-        """Execute the game."""
+        """Execute the game loop."""
 
         while self._running:
             pygame.event.pump()
@@ -117,25 +115,15 @@ class App:
             # Send events to the handler.
             self.on_event(event)
 
+            # Perform checks about walls and items.
             self.on_loop()
 
+            # Render sprites.
             self.render()
 
+            # MacGyver's in front of the guardian.
+            if self.macgyver.rect in self.guardian.adjacent_tiles:
+                # Calculates whether MacGyver will die or put the guardian to sleep.
+                self._running = self.guardian.sleep_or_kill(self.macgyver)
+
         self.on_cleanup()
-
-
-def main():
-    """Bootstrap the game."""
-
-    # Default size of the screen as a tuple.
-    window_size = get_screen_size()
-
-    # Initialize the game.
-    app = App(size=window_size)
-
-    # Then execute the game loop.
-    app.execute()
-
-
-if __name__ == '__main__':
-    main()
