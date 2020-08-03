@@ -7,6 +7,14 @@ from src.floor import Floor
 from src.macgyver import Macgyver
 from src.guardian import Guardian
 
+# Items
+from src.items.craftableitem import CraftableItem
+from src.items.syringe import Syringe
+from src.items.collectableitem import CollectableItem
+from src.items.plastictube import PlasticTube
+from src.items.needle import Needle
+from src.items.ether import Ether
+
 # Game constants
 MAZE_PATTERN_FILE = 'maze.txt'
 CAPTION = 'MacGyver Maze'
@@ -19,6 +27,9 @@ class App:
     # A specific event handler will manage that.
     scale = None
 
+    # A list containing each item that will be placed inside the maze.
+    item_kit = [Needle, PlasticTube, Ether]
+
     # Screen attributes
     screen = None
     screen_size = None
@@ -30,10 +41,11 @@ class App:
         self.screen_size = size
         self.scale = tuple(round(num / 15) for num in size)
 
-        # Initialize Game Groups
+        # Initialize Game Groups.
         self.characters = pygame.sprite.GroupSingle()
         self.walls = pygame.sprite.Group()
         self.floors = pygame.sprite.Group()
+        self.items = pygame.sprite.Group()
         self.sprites = pygame.sprite.RenderUpdates()
 
         # Assign default groups to each Sprite class.
@@ -41,11 +53,18 @@ class App:
         Guardian.containers = self.sprites, self.characters
         Wall.containers = self.sprites, self.walls
         Floor.containers = self.sprites, self.floors
+        CollectableItem.containers = self.sprites, self.items
+        CraftableItem.containers = self.sprites, self.items
 
         # Inject dependencies.
         self.maze = Maze(self.scale, file_pattern=MAZE_PATTERN_FILE)
         self.macgyver = Macgyver(self.maze.start, self.scale)
         self.guardian = Guardian(self.maze.end, self.scale)
+
+        # Place items...
+        for item in self.item_kit:
+            coords = self.maze.random_coordinates()
+            item(coords, self.scale)
 
         self._init()
 
@@ -65,6 +84,9 @@ class App:
 
         if event.type == KEYDOWN:
             keys = pygame.key.get_pressed()
+
+            if keys[K_c]:
+                Syringe.craft()
 
             if keys[K_UP]:
                 self.macgyver.move_up()
@@ -87,6 +109,10 @@ class App:
         # Check if MacGyver threw himself against a wall...
         if pygame.sprite.spritecollide(self.macgyver, self.walls, False):
             self.macgyver.rollback()
+
+        # Macgyver will collect the item and add it to it's inventory...
+        for item in pygame.sprite.spritecollide(self.macgyver, self.items, False):
+            item.collect(self.macgyver.inventory)
 
         # Check if MacGyver hit the Guardian
         if self.macgyver.rect.colliderect(self.guardian.rect):

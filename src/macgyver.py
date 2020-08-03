@@ -49,7 +49,7 @@ class Macgyver(sprite.Sprite):
         # Represent the inventory of MacGyver where the items will be stored.
         # This inventory must be filled with the three needed items in order
         # to put the guardian in sleep.
-        self.inventory = []
+        self.inventory = sprite.Group()
 
     @property
     def coordinates(self):

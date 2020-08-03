@@ -3,6 +3,7 @@ import pygame.rect as pyrect
 import pygame.image
 from operator import sub
 from src.utils import asset, scale_position
+from src.macgyver import Macgyver
 
 
 class Guardian(sprite.Sprite):
@@ -63,7 +64,7 @@ class Guardian(sprite.Sprite):
         """The guardian will sleep, we can erase him from the display."""
         self.kill()
 
-    def sleep_or_kill(self, macgyver):
+    def sleep_or_kill(self, macgyver: Macgyver):
         if macgyver.inventory:
             self._sleep()
 

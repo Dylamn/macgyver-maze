@@ -19,7 +19,7 @@ class Maze:
 
         self.pattern_file = file_pattern
         self.parse_maze_pattern()  # Populate the maze grid property.
-        self.random_coordinates()
+
         # Starting and ending point coordinates.
         self.start = self.find_points('S')
         self.end = self.find_points('F')

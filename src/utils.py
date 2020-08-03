@@ -45,7 +45,7 @@ def asset(relpath=""):
     assert path.isfile(asset_path), f"The path doesn't indicate a file. Given: {asset_path}"
     assert path.exists(asset_path), "Given file doesn't exists."
 
-    return path.realpath(f'resources/{relpath}')
+    return str(asset_path)
 
 
 def base_path(relpath=""):
@@ -55,11 +55,9 @@ def base_path(relpath=""):
     """
     project_path = Path(path.realpath(''))
 
-    if not project_path.name.endswith('macgyver-maze'):
-        parent = project_path.parent
-
-        while not parent.name.endswith('macgyver-maze'):
-            parent = parent.parent
+    # Jump to the parent directory as long as it's not the project directory (macgyver-maze).
+    while not project_path.name.endswith('macgyver-maze'):
+        project_path = project_path.parent
 
     return project_path.joinpath(relpath)
 
