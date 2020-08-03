@@ -49,7 +49,6 @@ class CraftableItem(sprite.Sprite, ICraftableItem):
             comsume = []
             for item in inventory:
                 if item in self.items_required:
-                    print("hi")
                     return True
         else:
             return False

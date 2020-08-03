@@ -59,12 +59,23 @@ class Maze:
 
             char = self.grid[column][line]
 
-            if not char == '#' or not 'S' or not 'F' or not 'I':
-                coords = (line, column)
+            if char not in ['#', 'S', 'F', 'I']:
+                # Will stay at True if the selected tile is not adjacent to the guardian, an item or to MacGyver.
+                # This allows items to be spread out by not being side by side.
+                safe_place = True
 
-                # Mark this tile as occuped by an item.
-                self.grid[column][line] = 'I'
-                search = False
+                for y in [-1, 0, 1]:
+                    for x in [-1, 0, 1]:
+                        print("checking tiles", self.grid[column + y][line + x])
+                        if self.grid[column + y][line + x] in ['S', 'F', 'I']:
+                            safe_place = False
+
+                if safe_place:
+                    coords = (line, column)
+
+                    # Mark this tile as occuped by an item.
+                    self.grid[column][line] = 'I'
+                    search = False
 
         return coords
 
