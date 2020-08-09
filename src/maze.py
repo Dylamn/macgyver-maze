@@ -20,6 +20,8 @@ class Maze:
         self.pattern_file = file_pattern
         self.parse_maze_pattern()  # Populate the maze grid property.
 
+        self.empty_tiles = []
+
         # Starting and ending point coordinates.
         self.start = self.find_points('S')
         self.end = self.find_points('F')
@@ -34,6 +36,8 @@ class Maze:
                 if tile == "#":
                     # Add a new wall.
                     Wall(x, y, self.scale)
+                # elif tile == " ":
+                #     self.empty_tiles.append((x, y))
                 else:
                     # Add a new floor tile.
                     Floor(x, y, self.scale)
@@ -47,7 +51,7 @@ class Maze:
                 if tile.lower() == wanted.lower():
                     return x, y
 
-    def random_coordinates(self):
+    def random_coordinates(self):  # TODO: Make a function that delete adjacent index.
         """Generate random coordinates. The result is an unoccupied ground (not a S, F, I, or #)."""
         search = True
         coords = None
@@ -64,9 +68,8 @@ class Maze:
                 # This allows items to be spread out by not being side by side.
                 safe_place = True
 
-                for y in [-1, 0, 1]:
-                    for x in [-1, 0, 1]:
-                        print("checking tiles", self.grid[column + y][line + x])
+                for y in range(-1, 2):
+                    for x in range(-1, 2):
                         if self.grid[column + y][line + x] in ['S', 'F', 'I']:
                             safe_place = False
 

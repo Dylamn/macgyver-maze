@@ -64,7 +64,7 @@ class Guardian(sprite.Sprite):
         """The guardian will sleep, we can erase him from the display."""
         self.kill()
 
-    def sleep_or_kill(self, macgyver: Macgyver):
+    def is_beatable(self, macgyver: Macgyver):
         if macgyver.inventory:
             self._sleep()
 
