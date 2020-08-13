@@ -19,7 +19,7 @@ class MazeTestCase(unittest.TestCase):
         # Assign the groups for each class.
         Wall.containers = cls.walls
         Floor.containers = cls.floors
-        print('init')
+
         cls.maze = Maze((1, 1), file_pattern='tests/test_maze.txt')
 
     def test_maze_length(self):
@@ -51,6 +51,20 @@ class MazeTestCase(unittest.TestCase):
             ["#", " ", " ", "#", " ", " ", "#", " ", " ", "#", "#", " ", " ", " ", "#"],
             ["#", "#", "#", "#", "#", "#", "#", "F", "#", "#", "#", "#", "#", "#", "#"],
         ], self.maze.grid, "Parsed Maze pattern doesn't match.")
+
+    def test_random_coordinates(self):
+        point = self.maze.random_coordinates()
+        x, y = point
+        adjacents = [
+            (x - 1, y),  # left
+            (x + 1, y),  # right
+            (x, y + 1),  # top
+            (x, y - 1),  # bottom
+        ]
+
+        # Check to see if there are any adjacent tiles, they've normally been removed.
+        for adjacent in adjacents:
+            self.assertNotIn(adjacent, self.maze.empty_tiles)
 
 
 if __name__ == '__main__':

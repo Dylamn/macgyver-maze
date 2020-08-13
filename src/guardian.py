@@ -5,6 +5,7 @@ from operator import sub
 from src.utils import asset, scale_position
 from src.macgyver import Macgyver
 
+from src.items.syringe import Syringe
 
 class Guardian(sprite.Sprite):
     """This class represents the Guardian."""
@@ -53,6 +54,7 @@ class Guardian(sprite.Sprite):
     def find_adjacent_tiles(self, scale):
         width, height = scale
 
+        # Retrieve all adjacent tiles.
         adjacent_top = pyrect.Rect(tuple(map(sub, self.coordinates, (0, -height))), (width, height))
         adjacent_down = pyrect.Rect(tuple(map(sub, self.coordinates, (0, height))), (width, height))
         adjacent_left = pyrect.Rect(tuple(map(sub, self.coordinates, (-width, 0))), (width, height))
@@ -65,13 +67,13 @@ class Guardian(sprite.Sprite):
         self.kill()
 
     def is_beatable(self, macgyver: Macgyver):
-        if macgyver.inventory:
+        if Syringe in macgyver.inventory:
+            # MacGyver has the syringe
             self._sleep()
-
             # Return True to indicate to the app to continue.
             return True
         else:
+            # MacGyver didn't have the syringe...
             macgyver.kill()
-
             # Return False to indicate to the app to stop running.
             return False

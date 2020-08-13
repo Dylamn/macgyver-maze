@@ -10,6 +10,12 @@ class ICollectableItem(metaclass=ABCMeta):
                 callable(subclass.collect) or
                 NotImplemented)
 
+    # The name of the item.
+    name = None
+
+    # Image that represents the object.
+    _image_file = None
+
     @property
     @abstractmethod
     def item_file(self) -> str:
@@ -41,22 +47,29 @@ class ICraftableItem(metaclass=ABCMeta):
         """The name of the file used for the visual representation of the item."""
         raise NotImplementedError
 
-    @property
-    @abstractmethod
-    def items_required(self) -> list:
-        """The list of items needed for the craft of this item."""
-        raise NotImplementedError
+    # The name of the item.
+    name = None
 
+    # Image that represents the object.
+    _image_file = None
+
+    # The list of items needed for the craft of this item.
+    items_required = []
+
+    @classmethod
     @abstractmethod
-    def can_be_crafted(self, inventory: sprite.Group) -> bool:
+    def can_be_crafted(cls, inventory: sprite.Group) -> bool:
         """Determine whether the item can be crafted or not with the items in inventory."""
         raise NotImplementedError
 
+    @classmethod
     @abstractmethod
-    def craft(self, inventory: sprite.Group) -> bool:
+    def craft(cls, inventory: sprite.Group) -> bool:
         """Craft the item and consume the items in inventory needed for the craft."""
         raise NotImplementedError
 
-    def missing_items(self, inventory: sprite.Group) -> list:
+    @classmethod
+    @abstractmethod
+    def missing_items(cls, inventory: sprite.Group) -> list:
         """Determine which items are missing for the craft."""
         raise NotImplementedError

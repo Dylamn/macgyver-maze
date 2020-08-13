@@ -86,7 +86,10 @@ class App:
             keys = pygame.key.get_pressed()
 
             if keys[K_c]:
-                Syringe.craft()
+                if Syringe.can_be_crafted(self.macgyver.inventory):
+                    syringe = Syringe((0, 0), self.scale)
+                    syringe.kill()
+                    self.macgyver.inventory.add(syringe)
 
             if keys[K_UP]:
                 self.macgyver.move_up()
@@ -150,6 +153,6 @@ class App:
             # MacGyver's in front of the guardian.
             if self.macgyver.rect in self.guardian.adjacent_tiles:
                 # Calculates whether MacGyver will die or put the guardian to sleep.
-                self._running = self.guardian.sleep_or_kill(self.macgyver)
+                self._running = self.guardian.is_beatable(self.macgyver)
 
         self.on_cleanup()

@@ -8,6 +8,9 @@ class CollectableItem(sprite.Sprite, ICollectableItem):
     """Base concrete class for items that can be collected."""
     _image_file = None
 
+    # Name of the item
+    name = None
+
     @property
     def item_file(self):
         return self._image_file

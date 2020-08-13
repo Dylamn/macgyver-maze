@@ -8,13 +8,12 @@ class CraftableItem(sprite.Sprite, ICraftableItem):
     """Base concrete class for items that can be crafted."""
     _image_file = None
 
+    # The list of items needed for the craft of this item.
+    items_required = []
+
     @property
     def item_file(self) -> str:
         return self._image_file
-
-    @property
-    def items_required(self) -> list:
-        return []
 
     # Will contains the sprite groups.
     containers = None
@@ -53,17 +52,23 @@ class CraftableItem(sprite.Sprite, ICraftableItem):
         else:
             return False
 
-    def can_be_crafted(self, inventory: sprite.Group) -> bool:
-        if self.missing_items(inventory):
+    @classmethod
+    def can_be_crafted(cls, inventory: sprite.Group) -> bool:
+        if cls.missing_items(inventory):
+            print('not craftable')
             return False
         else:
+            print('craftable')
             return True
 
-    def missing_items(self, inventory: sprite.Group) -> list:
-        missings = []
+    @classmethod
+    def missing_items(cls, inventory: sprite.Group) -> list:
+        missings = cls.items_required.copy()
 
-        for item in self.items_required:
-            if item not in inventory:  # TODO: Test inventory.has()
-                missings.append(item)
+        for collected in inventory:
+            for item in missings:
+                if isinstance(collected, item):
+                    missings.remove(item)
 
+        print(f'What\'s missing : {missings}')
         return missings
