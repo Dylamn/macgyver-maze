@@ -24,16 +24,16 @@ class MazeTestCase(unittest.TestCase):
 
     def test_maze_length(self):
         """Test the length of the maze. (Must be a 15x15)"""
-        self.assertEqual(15, self.maze.M, "M is not equal to 15.")
-        self.assertEqual(15, self.maze.N, "N is not equal to 15.")
+        self.assertEqual(15, self.maze.columns, "columns is not equal to 15.")
+        self.assertEqual(15, self.maze.rows, "N is not equal to 15.")
 
         self.assertEqual(15, len(self.maze.grid), "the lines of the maze does not have the intended dimensions.")
 
         for columns in self.maze.grid:
-            self.assertEqual(15, len(columns), "The columns of the maze does not have the intented dimensions.")
+            self.assertEqual(15, len(columns), "The columns of the maze does not have the intended dimensions.")
 
     def test_maze_pattern(self):
-        """Test if the maze grid is correctly builded."""
+        """Test if the maze grid is correctly built."""
         self.assertEqual([
             ["#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"],
             ["#", "#", "#", " ", " ", " ", "#", " ", " ", " ", "#", " ", " ", "S", "#"],

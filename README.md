@@ -28,7 +28,13 @@ $ python3 main.py
 ```
 
 ## Game controls
-To move MacGyver, use the keyboard arrows <kbd>🡩</kbd> <kbd>🡪</kbd> <kbd>🡫</kbd> <kbd>🡨</kbd>.
 
-MacGyver will collect every object simply by walking on it. The syringe will automatically be made by MacGyver when
-all necessary items will be collected.
+To move MacGyver, use the keyboard arrows:
+
+<kbd>←</kbd> <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd>
+
+MacGyver will collect every object simply by walking on it. The syringe can be crafted when MacGyver gather all necessary items.
+
+To craft the syringe:
+
+Press <kbd>C</kbd>

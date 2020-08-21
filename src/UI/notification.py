@@ -1,4 +1,4 @@
-import pygame.font
+import pygame.freetype
 
 # Colors
 BLACK = (0, 0, 0)
@@ -10,7 +10,8 @@ class Notification:
     """Send text notification to the screen."""
 
     sentences = {
-        "craft-available": 'You can craft the syringue !'
+        "craft-available": 'You can craft the syringe !',
+        "win": 'You win'
     }
 
     @property
@@ -18,13 +19,13 @@ class Notification:
         return self.image is not None
 
     def __init__(self, size=50):
-        self.font = pygame.font.SysFont(None, size)
+        self.font = pygame.freetype.SysFont(None, size)
         self.image = None
 
     def text(self, screen, slug_sentence):
-        self.image = self.font.render(self.sentences.get(slug_sentence, None), True, BLACK)
+        # self.image = self.font.render(self.sentences.get(slug_sentence, None), True, WHITE)
 
-        screen.blit(self.image, (200, 200))
+        self.font.render_to(screen, (200, 200), self.sentences.get(slug_sentence, None), WHITE)
 
     def erase(self):
         self.image = None

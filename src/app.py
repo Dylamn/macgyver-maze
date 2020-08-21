@@ -37,7 +37,7 @@ class App:
     screen = None
     screen_size = None
 
-    _running = False  # Determine whether the game is running or not.
+    __running = False  # Determine whether the game is running or not.
 
     def __init__(self, size=(720, 720)):
         """Initialize the game/application."""
@@ -82,12 +82,12 @@ class App:
         self.screen = pygame.display.set_mode(self.screen_size)
 
         pygame.display.set_caption(CAPTION)
-        self._running = True
+        self.__running = True
 
     def on_event(self, event):
         """Handle pygame events."""
         if event.type == QUIT:
-            self._running = False
+            self.__running = False
 
         if event.type == KEYDOWN:
             keys = pygame.key.get_pressed()
@@ -114,14 +114,17 @@ class App:
                 self.macgyver.move_left()
 
             elif keys[K_ESCAPE]:
-                self._running = False
+                self.__running = False
 
     def on_loop(self):
         """Perform checks, such as checking for colliding sprites."""
 
         # if Syringe.can_be_crafted(self.macgyver.inventory):
+        print(f'before {self.notifs.is_running}')
         self.notifs.text(self.screen, 'craft-available')
+        print(f'after {self.notifs.is_running}')
 
+        self.sprites.add()
         # Check if MacGyver threw himself against a wall...
         if pygame.sprite.spritecollide(self.macgyver, self.walls, False):
             self.macgyver.rollback()
@@ -135,14 +138,16 @@ class App:
 
     def render(self):
         """Make the render of the game."""
-        dirty = self.sprites.draw(self.screen)
-
-        # Only update sprites, not the whole screen.
-        pygame.display.update(dirty)
-
         if self.notifs.is_running:
-            print('RUNNING NOTIF')
-            pygame.display.flip()
+            dirty = self.sprites.draw(self.screen)
+
+            # Only update sprites, not the whole screen.
+            pygame.display.update(dirty)
+        # else:
+
+
+        # if self.notifs.is_running:
+            # pygame.display.update()
 
     @staticmethod
     def on_cleanup():
@@ -151,7 +156,7 @@ class App:
     def execute(self):
         """Execute the game loop."""
 
-        while self._running:
+        while self.__running:
             pygame.event.pump()
             event = pygame.event.wait()
 
@@ -167,6 +172,6 @@ class App:
             # MacGyver's in front of the guardian.
             if self.macgyver.rect in self.guardian.adjacent_tiles:
                 # Calculates whether MacGyver will die or put the guardian to sleep.
-                self._running = self.guardian.is_beatable(self.macgyver)
+                self.__running = self.guardian.is_beatable(self.macgyver)
 
         self.on_cleanup()

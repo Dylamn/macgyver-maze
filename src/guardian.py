@@ -2,7 +2,7 @@ import pygame.sprite as sprite
 import pygame.rect as pyrect
 import pygame.image
 from operator import sub
-from src.utils import asset, scale_position
+from src.utils import asset
 from src.macgyver import Macgyver
 
 from src.items.syringe import Syringe
@@ -69,7 +69,7 @@ class Guardian(sprite.Sprite):
 
     def is_beatable(self, macgyver: Macgyver):
         for item in macgyver.inventory:
-            if isinstance(item, Syringe):
+            if item.name == Syringe.name:
                 # MacGyver has the syringe
                 self._sleep()
 

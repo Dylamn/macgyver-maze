@@ -14,8 +14,8 @@ class Maze:
         # Set a scale attribute that will be used by floors and walls.
         self.scale = scale
 
-        self.M = 15  # Number of columns
-        self.N = 15  # Number of rows
+        self.columns = 15  # Number of columns
+        self.rows = 15  # Number of rows
 
         self.pattern_file = file_pattern
         self.parse_maze_pattern()  # Populate the maze grid property.
@@ -42,7 +42,7 @@ class Maze:
                     Floor(x, y, self.scale)
                     # Add every empty tiles into the array `empty_tiles`.
                     # This array will be helpful for the placement of items.
-                    self.empty_tiles.setdefault((x, y), " ")
+                    self.empty_tiles[(x, y)] = " "
                 else:
                     # Add a new floor tile.
                     Floor(x, y, self.scale)
@@ -59,16 +59,12 @@ class Maze:
     def random_coordinates(self):
         """Generate random coordinates. The result is an unoccupied ground (not a S, F, I, or #)."""
         coords = random.choice(list(self.empty_tiles))
-        print(len(self.empty_tiles))
 
         # Remove the selected tile.
         self.empty_tiles.pop(coords, None)
-        print(len(self.empty_tiles))
 
         # Remove adjacent empty tiles.
         self._remove_adjacent_coordinates(coords)
-        print(len(self.empty_tiles))
-        exit(1)
 
         # Extract x and y point.
         column, line = coords
@@ -77,17 +73,14 @@ class Maze:
         return coords
 
     def _remove_adjacent_coordinates(self, point: tuple):
-        """Remove adjacent empty tiles (ommit the possibility to place an item next to another)"""
+        """Remove adjacent empty tiles (omit the possibility to place an item next to another)"""
         for i in [-1, 1]:
             col, row = point
             adjacent_x = (col + i, row)
             adjacent_y = (col, row + i)
 
-            if adjacent_x in self.empty_tiles:
-                self.empty_tiles.pop(adjacent_x, None)
-
-            if adjacent_y in self.empty_tiles:
-                self.empty_tiles.pop(adjacent_y, None)
+            self.empty_tiles.pop(adjacent_x, None)
+            self.empty_tiles.pop(adjacent_y, None)
 
     def parse_maze_pattern(self):
         """Populate the maze grid by reading the maze file pattern."""
