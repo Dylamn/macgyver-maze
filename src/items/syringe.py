@@ -10,4 +10,4 @@ class Syringe(CraftableItem):
     _image_file = "seringue.png"
 
     # Item required to craft this item.
-    items_required = [Ether, Needle, PlasticTube]
+    items_required = [Ether.name, Needle.name, PlasticTube.name]

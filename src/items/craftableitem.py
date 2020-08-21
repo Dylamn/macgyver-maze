@@ -43,32 +43,37 @@ class CraftableItem(sprite.Sprite, ICraftableItem):
         # Place the item at the given coordinates.
         self.rect.topleft = scale_position(pos, scale)
 
-    def craft(self, inventory: sprite.Group) -> bool:
-        if self.can_be_crafted(inventory):
-            comsume = []
+    @classmethod
+    def craft(cls, inventory: sprite.Group) -> bool:
+        if cls.can_be_crafted(inventory):
             for item in inventory:
-                if item in self.items_required:
-                    return True
+                if item.name in cls.items_required:
+                    # Consume items for the craft
+                    print(item)
+                    inventory.remove(item)
+
+            # Add the item in the inventory
+            inventory.add(cls((0, 0), (0, 0)))
+
+            return True
         else:
             return False
 
     @classmethod
     def can_be_crafted(cls, inventory: sprite.Group) -> bool:
         if cls.missing_items(inventory):
-            print('not craftable')
             return False
         else:
-            print('craftable')
             return True
 
     @classmethod
     def missing_items(cls, inventory: sprite.Group) -> list:
+        # Clone the array.
         missings = cls.items_required.copy()
 
+        # Loop over the inventory.
         for collected in inventory:
-            for item in missings:
-                if isinstance(collected, item):
-                    missings.remove(item)
+            if collected.name in cls.items_required:
+                missings.remove(collected.name)
 
-        print(f'What\'s missing : {missings}')
         return missings

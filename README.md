@@ -1,7 +1,7 @@
 # Macgyver-maze
 
 ## Overview
-macgyver-maze is a python application game where the player is the famous MacGyver, lost inside a maze. 
+macgyver-maze is a game written in python where the player is the famous MacGyver, lost inside a maze. 
 
 The exit is protected by a guardian and MacGyver needs to bypass him in order to escape. To do this, MacGyver 
 must combine three components (a plastic tube, a needle and a bottle of ether) to make a syringe 
@@ -28,7 +28,7 @@ $ python3 main.py
 ```
 
 ## Game controls
-To move MacGyver, use the keyboard arrows 🡩 🡪 🡫 🡨.
+To move MacGyver, use the keyboard arrows <kbd>🡩</kbd> <kbd>🡪</kbd> <kbd>🡫</kbd> <kbd>🡨</kbd>.
 
 MacGyver will collect every object simply by walking on it. The syringe will automatically be made by MacGyver when
 all necessary items will be collected.

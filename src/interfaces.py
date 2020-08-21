@@ -4,6 +4,7 @@ from abc import ABCMeta, abstractmethod
 
 class ICollectableItem(metaclass=ABCMeta):
     """This interface is used to define an item."""
+
     @classmethod
     def __subclasshook__(cls, subclass):
         return (hasattr(subclass, 'collect') and
@@ -30,6 +31,7 @@ class ICollectableItem(metaclass=ABCMeta):
 
 class ICraftableItem(metaclass=ABCMeta):
     """This interface is used to define an item that can be crafted."""
+
     @classmethod
     def __subclasshook__(cls, subclass):
         return (hasattr(subclass, 'items_required') and

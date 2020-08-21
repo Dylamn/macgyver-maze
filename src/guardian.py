@@ -7,6 +7,7 @@ from src.macgyver import Macgyver
 
 from src.items.syringe import Syringe
 
+
 class Guardian(sprite.Sprite):
     """This class represents the Guardian."""
 
@@ -36,7 +37,7 @@ class Guardian(sprite.Sprite):
         self.rect = self.image.get_rect()
 
         # Place the Guardian on the ending point.
-        self.rect.topleft = scale_position(end, scale)
+        self.rect.topleft = end
 
         # Find the adjacent Guardian tiles where MacGyver will lose
         # if he doesn't have the required items while on one of these squares.
@@ -67,11 +68,14 @@ class Guardian(sprite.Sprite):
         self.kill()
 
     def is_beatable(self, macgyver: Macgyver):
-        if Syringe in macgyver.inventory:
-            # MacGyver has the syringe
-            self._sleep()
-            # Return True to indicate to the app to continue.
-            return True
+        for item in macgyver.inventory:
+            if isinstance(item, Syringe):
+                # MacGyver has the syringe
+                self._sleep()
+
+                # Return True to indicate to the app to continue.
+                return True
+
         else:
             # MacGyver didn't have the syringe...
             macgyver.kill()

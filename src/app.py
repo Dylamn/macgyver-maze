@@ -1,6 +1,9 @@
 import pygame
 from pygame.locals import *
 
+from src.utils import *
+from src.UI.notification import Notification
+
 from src.maze import Maze
 from src.wall import Wall
 from src.floor import Floor
@@ -54,12 +57,18 @@ class App:
         Wall.containers = self.sprites, self.walls
         Floor.containers = self.sprites, self.floors
         CollectableItem.containers = self.sprites, self.items
-        CraftableItem.containers = self.sprites, self.items
+        CraftableItem.containers = self.sprites
 
-        # Inject dependencies.
+        # Set maze dependency.
         self.maze = Maze(self.scale, file_pattern=MAZE_PATTERN_FILE)
+
+        # Retrieve the finish point.
+        self.finish_point = scale_position(self.maze.end, self.scale)
+
+        # Init last dependencies.
         self.macgyver = Macgyver(self.maze.start, self.scale)
-        self.guardian = Guardian(self.maze.end, self.scale)
+        self.guardian = Guardian(self.finish_point, self.scale)
+        self.notifs = Notification()
 
         # Place items...
         for item in self.item_kit:
@@ -70,8 +79,6 @@ class App:
 
     def _init(self):
         """Initialize pygame modules and required stuff like screen, game loop value..."""
-        pygame.init()
-
         self.screen = pygame.display.set_mode(self.screen_size)
 
         pygame.display.set_caption(CAPTION)
@@ -86,10 +93,13 @@ class App:
             keys = pygame.key.get_pressed()
 
             if keys[K_c]:
-                if Syringe.can_be_crafted(self.macgyver.inventory):
-                    syringe = Syringe((0, 0), self.scale)
-                    syringe.kill()
-                    self.macgyver.inventory.add(syringe)
+                is_crafted = Syringe.craft(self.macgyver.inventory)
+
+                if is_crafted:
+                    # Crafting notif is running ?
+                    if self.notifs.is_running:
+                        # Yes, dismiss it.
+                        self.notifs.erase()
 
             if keys[K_UP]:
                 self.macgyver.move_up()
@@ -109,6 +119,9 @@ class App:
     def on_loop(self):
         """Perform checks, such as checking for colliding sprites."""
 
+        # if Syringe.can_be_crafted(self.macgyver.inventory):
+        self.notifs.text(self.screen, 'craft-available')
+
         # Check if MacGyver threw himself against a wall...
         if pygame.sprite.spritecollide(self.macgyver, self.walls, False):
             self.macgyver.rollback()
@@ -117,11 +130,8 @@ class App:
         for item in pygame.sprite.spritecollide(self.macgyver, self.items, False):
             item.collect(self.macgyver.inventory)
 
-        # Check if MacGyver hit the Guardian
-        if self.macgyver.rect.colliderect(self.guardian.rect):
-            self.macgyver.kill()
-            print('You die. Sad story !')
-            self._running = False
+        if self.macgyver.coordinates == self.finish_point:
+            print('you win')
 
     def render(self):
         """Make the render of the game."""
@@ -129,6 +139,10 @@ class App:
 
         # Only update sprites, not the whole screen.
         pygame.display.update(dirty)
+
+        if self.notifs.is_running:
+            print('RUNNING NOTIF')
+            pygame.display.flip()
 
     @staticmethod
     def on_cleanup():
