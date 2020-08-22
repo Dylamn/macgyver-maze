@@ -37,7 +37,12 @@ class App:
     screen = None
     screen_size = None
 
-    __running = False  # Determine whether the game is running or not.
+    # Determine whether the game is running or not.
+    __running = False
+
+    # No action can be performed when set to true.
+    # This value is used when the player win.
+    __lock = False
 
     def __init__(self, size=(720, 720)):
         """Initialize the game/application."""
@@ -68,7 +73,6 @@ class App:
         # Init last dependencies.
         self.macgyver = Macgyver(self.maze.start, self.scale)
         self.guardian = Guardian(self.finish_point, self.scale)
-        self.notifs = Notification()
 
         # Place items...
         for item in self.item_kit:
@@ -82,12 +86,17 @@ class App:
         self.screen = pygame.display.set_mode(self.screen_size)
 
         pygame.display.set_caption(CAPTION)
+        self.notification = Notification(self.scale[0])
+
         self.__running = True
 
     def on_event(self, event):
         """Handle pygame events."""
         if event.type == QUIT:
             self.__running = False
+
+        if self.__lock:
+            return
 
         if event.type == KEYDOWN:
             keys = pygame.key.get_pressed()
@@ -97,9 +106,15 @@ class App:
 
                 if is_crafted:
                     # Crafting notif is running ?
-                    if self.notifs.is_running:
+                    if self.notification.is_active:
                         # Yes, dismiss it.
-                        self.notifs.erase()
+                        self.notification.erase()
+                else:
+                    self.notification.active('items-missing')
+
+            if keys[K_e]:
+                if self.notification.is_active:
+                    self.notification.erase()
 
             if keys[K_UP]:
                 self.macgyver.move_up()
@@ -119,12 +134,9 @@ class App:
     def on_loop(self):
         """Perform checks, such as checking for colliding sprites."""
 
-        # if Syringe.can_be_crafted(self.macgyver.inventory):
-        print(f'before {self.notifs.is_running}')
-        self.notifs.text(self.screen, 'craft-available')
-        print(f'after {self.notifs.is_running}')
+        if Syringe.can_be_crafted(self.macgyver.inventory):
+            self.notification.active('craft-available')
 
-        self.sprites.add()
         # Check if MacGyver threw himself against a wall...
         if pygame.sprite.spritecollide(self.macgyver, self.walls, False):
             self.macgyver.rollback()
@@ -134,20 +146,20 @@ class App:
             item.collect(self.macgyver.inventory)
 
         if self.macgyver.coordinates == self.finish_point:
-            print('you win')
+            self.notification.active('win')
 
     def render(self):
         """Make the render of the game."""
-        if self.notifs.is_running:
-            dirty = self.sprites.draw(self.screen)
+        dirty = self.sprites.draw(self.screen)
 
-            # Only update sprites, not the whole screen.
-            pygame.display.update(dirty)
-        # else:
+        # Only update sprites, not the whole screen.
+        pygame.display.update(dirty)
 
+        if self.notification.is_active:
+            self.notification.render(self.screen)
 
-        # if self.notifs.is_running:
-            # pygame.display.update()
+            # Display the text.
+            pygame.display.flip()
 
     @staticmethod
     def on_cleanup():
@@ -166,12 +178,13 @@ class App:
             # Perform checks about walls and items.
             self.on_loop()
 
-            # Render sprites.
+            # Render graphics.
             self.render()
 
-            # MacGyver's in front of the guardian.
-            if self.macgyver.rect in self.guardian.adjacent_tiles:
-                # Calculates whether MacGyver will die or put the guardian to sleep.
-                self.__running = self.guardian.is_beatable(self.macgyver)
+            if self.guardian.alive():
+                # MacGyver's in front of the guardian.
+                if self.macgyver.rect in self.guardian.adjacent_tiles:
+                    # Calculates whether MacGyver will die or put the guardian to sleep.
+                    self.__running = self.guardian.is_beatable(self.macgyver)
 
         self.on_cleanup()

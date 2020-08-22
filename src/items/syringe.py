@@ -7,7 +7,7 @@ from .plastictube import PlasticTube
 
 class Syringe(CraftableItem):
     # The filename of the syringe image.
-    _image_file = "seringue.png"
+    _image_file = "syringe.png"
 
     # Item required to craft this item.
     items_required = [Ether.name, Needle.name, PlasticTube.name]

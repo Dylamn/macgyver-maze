@@ -11,7 +11,7 @@ class Macgyver(sprite.Sprite):
     containers = None
 
     # The filename of the MacGyver image.
-    MAC_GYVER = "MacGyver.png"
+    MAC_GYVER = "mac_gyver.png"
 
     # Directional values. Each tile of the labyrinth is about 20px.
     # MacGyver will therefore make steps of 20px.

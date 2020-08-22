@@ -15,7 +15,7 @@ class Guardian(sprite.Sprite):
     containers = None
 
     # The filename of the Guardian image.
-    GUARDIAN = "Gardien.png"
+    GUARDIAN = "guardian.png"
 
     def __init__(self, end: tuple, scale: tuple, *containers: sprite.Group):
         """Guardian default constructor."""
