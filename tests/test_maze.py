@@ -6,39 +6,35 @@ from src.wall import Wall
 from src.floor import Floor
 
 
-def _init():
-    # Initialize Game Groups
-    walls = pygame.sprite.Group()
-    floors = pygame.sprite.Group()
-    sprites = pygame.sprite.RenderUpdates()
-
-    # Assign default groups.
-    Wall.containers = sprites, walls
-    Floor.containers = sprites, floors
-
-
 class MazeTestCase(unittest.TestCase):
+    """Tests for Maze class."""
 
-    """Tests for Maze."""
+    @classmethod
+    def setUpClass(cls) -> None:
+        # The following lines are necessary for the tests to work.
+        # Maze class create Wall and Floor instances which needs to be added in a sprite group.
+        cls.walls = pygame.sprite.Group()
+        cls.floors = pygame.sprite.Group()
+
+        # Assign the groups for each class.
+        Wall.containers = cls.walls
+        Floor.containers = cls.floors
+
+        cls.maze = Maze((1, 1), file_pattern='tests/test_maze.txt')
 
     def test_maze_length(self):
         """Test the length of the maze. (Must be a 15x15)"""
-        maze = Maze((1, 1), file_pattern='test_maze.txt')
+        self.assertEqual(15, self.maze.columns, "columns is not equal to 15.")
+        self.assertEqual(15, self.maze.rows, "N is not equal to 15.")
 
-        self.assertEqual(maze.M, 15, "M is not equal to 15.")
-        self.assertEqual(maze.N, 15, "N is not equal to 15.")
+        self.assertEqual(15, len(self.maze.grid), "the lines of the maze does not have the intended dimensions.")
 
-        self.assertEqual(len(maze.grid), 15, "the maze does not have the intended dimensions.")
-
-        for columns in maze.grid:
-            self.assertEqual(len(columns), 15, "The columns of the maze does not have the intented dimensions.")
+        for columns in self.maze.grid:
+            self.assertEqual(15, len(columns), "The columns of the maze does not have the intended dimensions.")
 
     def test_maze_pattern(self):
-        _init()
-        """Test if the maze grid is correctly builded."""
-        maze = Maze((1, 1), file_pattern='test_maze.txt')
-
-        self.assertEqual(maze.grid,  [
+        """Test if the maze grid is correctly built."""
+        self.assertEqual([
             ["#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"],
             ["#", "#", "#", " ", " ", " ", "#", " ", " ", " ", "#", " ", " ", "S", "#"],
             ["#", " ", " ", " ", " ", "#", "#", " ", "#", " ", " ", " ", "#", "#", "#"],
@@ -54,7 +50,21 @@ class MazeTestCase(unittest.TestCase):
             ["#", " ", " ", " ", "#", "#", "#", "#", " ", " ", "#", " ", "#", " ", "#"],
             ["#", " ", " ", "#", " ", " ", "#", " ", " ", "#", "#", " ", " ", " ", "#"],
             ["#", "#", "#", "#", "#", "#", "#", "F", "#", "#", "#", "#", "#", "#", "#"],
-        ])
+        ], self.maze.grid, "Parsed Maze pattern doesn't match.")
+
+    def test_random_coordinates(self):
+        point = self.maze.random_coordinates()
+        x, y = point
+        adjacents = [
+            (x - 1, y),  # left
+            (x + 1, y),  # right
+            (x, y + 1),  # top
+            (x, y - 1),  # bottom
+        ]
+
+        # Check to see if there are any adjacent tiles, they've normally been removed.
+        for adjacent in adjacents:
+            self.assertNotIn(adjacent, self.maze.empty_tiles)
 
 
 if __name__ == '__main__':

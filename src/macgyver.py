@@ -11,7 +11,7 @@ class Macgyver(sprite.Sprite):
     containers = None
 
     # The filename of the MacGyver image.
-    MAC_GYVER = "MacGyver.png"
+    MAC_GYVER = "mac_gyver.png"
 
     # Directional values. Each tile of the labyrinth is about 20px.
     # MacGyver will therefore make steps of 20px.
@@ -49,7 +49,7 @@ class Macgyver(sprite.Sprite):
         # Represent the inventory of MacGyver where the items will be stored.
         # This inventory must be filled with the three needed items in order
         # to put the guardian in sleep.
-        self.inventory = []
+        self.inventory = sprite.Group()
 
     @property
     def coordinates(self):

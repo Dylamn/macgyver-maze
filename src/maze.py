@@ -14,12 +14,16 @@ class Maze:
         # Set a scale attribute that will be used by floors and walls.
         self.scale = scale
 
-        self.M = 15  # Number of columns
-        self.N = 15  # Number of rows
+        self.columns = 15  # Number of columns
+        self.rows = 15  # Number of rows
 
         self.pattern_file = file_pattern
         self.parse_maze_pattern()  # Populate the maze grid property.
-        self.random_coordinates()
+
+        # Contains every coordinates where a item can be placed.
+        # key/value dictionary. The key are coordinates and values are " " spaces character.
+        self.empty_tiles = {}
+
         # Starting and ending point coordinates.
         self.start = self.find_points('S')
         self.end = self.find_points('F')
@@ -34,6 +38,11 @@ class Maze:
                 if tile == "#":
                     # Add a new wall.
                     Wall(x, y, self.scale)
+                elif tile == " ":
+                    Floor(x, y, self.scale)
+                    # Add every empty tiles into the array `empty_tiles`.
+                    # This array will be helpful for the placement of items.
+                    self.empty_tiles[(x, y)] = " "
                 else:
                     # Add a new floor tile.
                     Floor(x, y, self.scale)
@@ -49,24 +58,29 @@ class Maze:
 
     def random_coordinates(self):
         """Generate random coordinates. The result is an unoccupied ground (not a S, F, I, or #)."""
-        search = True
-        coords = None
+        coords = random.choice(list(self.empty_tiles))
 
-        # Try to find valid coordinates.
-        while search:
-            column = random.randint(0, self.M - 1)  # From 0 to 14
-            line = random.randint(0, self.N - 1)  # From 0 to 14
+        # Remove the selected tile.
+        self.empty_tiles.pop(coords, None)
 
-            char = self.grid[column][line]
+        # Remove adjacent empty tiles.
+        self._remove_adjacent_coordinates(coords)
 
-            if not char == '#' or not 'S' or not 'F' or not 'I':
-                coords = (line, column)
-
-                # Mark this tile as occuped by an item.
-                self.grid[column][line] = 'I'
-                search = False
+        # Extract x and y point.
+        column, line = coords
+        self.grid[column][line] = 'I'
 
         return coords
+
+    def _remove_adjacent_coordinates(self, point: tuple):
+        """Remove adjacent empty tiles (omit the possibility to place an item next to another)"""
+        for i in [-1, 1]:
+            col, row = point
+            adjacent_x = (col + i, row)
+            adjacent_y = (col, row + i)
+
+            self.empty_tiles.pop(adjacent_x, None)
+            self.empty_tiles.pop(adjacent_y, None)
 
     def parse_maze_pattern(self):
         """Populate the maze grid by reading the maze file pattern."""

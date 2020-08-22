@@ -2,7 +2,10 @@ import pygame.sprite as sprite
 import pygame.rect as pyrect
 import pygame.image
 from operator import sub
-from src.utils import asset, scale_position
+from src.utils import asset
+from src.macgyver import Macgyver
+
+from src.items.syringe import Syringe
 
 
 class Guardian(sprite.Sprite):
@@ -12,7 +15,7 @@ class Guardian(sprite.Sprite):
     containers = None
 
     # The filename of the Guardian image.
-    GUARDIAN = "Gardien.png"
+    GUARDIAN = "guardian.png"
 
     def __init__(self, end: tuple, scale: tuple, *containers: sprite.Group):
         """Guardian default constructor."""
@@ -34,7 +37,7 @@ class Guardian(sprite.Sprite):
         self.rect = self.image.get_rect()
 
         # Place the Guardian on the ending point.
-        self.rect.topleft = scale_position(end, scale)
+        self.rect.topleft = end
 
         # Find the adjacent Guardian tiles where MacGyver will lose
         # if he doesn't have the required items while on one of these squares.
@@ -52,6 +55,7 @@ class Guardian(sprite.Sprite):
     def find_adjacent_tiles(self, scale):
         width, height = scale
 
+        # Retrieve all adjacent tiles.
         adjacent_top = pyrect.Rect(tuple(map(sub, self.coordinates, (0, -height))), (width, height))
         adjacent_down = pyrect.Rect(tuple(map(sub, self.coordinates, (0, height))), (width, height))
         adjacent_left = pyrect.Rect(tuple(map(sub, self.coordinates, (-width, 0))), (width, height))
@@ -63,14 +67,17 @@ class Guardian(sprite.Sprite):
         """The guardian will sleep, we can erase him from the display."""
         self.kill()
 
-    def sleep_or_kill(self, macgyver):
-        if macgyver.inventory:
-            self._sleep()
+    def is_beatable(self, macgyver: Macgyver):
+        for item in macgyver.inventory:
+            if item.name == Syringe.name:
+                # MacGyver has the syringe
+                self._sleep()
 
-            # Return True to indicate to the app to continue.
-            return True
+                # Return True to indicate to the app to continue.
+                return True
+
         else:
+            # MacGyver didn't have the syringe...
             macgyver.kill()
-
             # Return False to indicate to the app to stop running.
             return False
