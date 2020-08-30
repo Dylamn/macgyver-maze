@@ -187,4 +187,7 @@ class App:
                     # Calculates whether MacGyver will die or put the guardian to sleep.
                     self.__running = self.guardian.is_beatable(self.macgyver)
 
+                    if self.macgyver.coordinates == self.maze.end:
+                        self.__lock = True
+
         self.on_cleanup()

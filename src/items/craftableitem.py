@@ -49,7 +49,6 @@ class CraftableItem(sprite.Sprite, ICraftableItem):
             for item in inventory:
                 if item.name in cls.items_required:
                     # Consume items for the craft
-                    print(item)
                     inventory.remove(item)
 
             # Add the item in the inventory

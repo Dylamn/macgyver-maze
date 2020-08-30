@@ -31,6 +31,5 @@ class InventoryUI:
 
         for i, item in enumerate(items, start=1):
             item_coords = tuple(val + (val * i) for val in item.rect.size)
-            print(item_coords)
 
             inventory_surface.blit(item.image, item_coords)
