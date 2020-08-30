@@ -1,5 +1,7 @@
 import sys
 import pygame
+
+from src.UI.menus import options_menu
 from src.game import Game
 
 from pygame.locals import *
@@ -54,6 +56,7 @@ class App:
         options_button_rect.topleft = (40, (play_button_rect.y + play_button_rect.height + 10))
         quit_button_rect.topleft = (40, options_button_rect.y + (options_button_rect.height + 10))
 
+        # This is the main menu.
         while True:
             self.screen.fill(BLACK)
             self.screen.blit(self.main_background, (0, 0))
@@ -74,9 +77,12 @@ class App:
                     # Then execute the game loop.
                     game.execute()
 
+                    # Remove resources.
+                    del game
+
             if options_button_rect.collidepoint((mouse_x, mouse_y)):
                 if self.click:
-                    print("options button")
+                    options_menu(self.screen)
 
             if quit_button_rect.collidepoint((mouse_x, mouse_y)):
                 if self.click:

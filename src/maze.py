@@ -6,10 +6,11 @@ from src.floor import Floor
 
 
 class Maze:
-    grid = []
-
     def __init__(self, scale, file_pattern='maze.txt'):
         """Default Maze constructor."""
+
+        # The grid of the maze.
+        self.grid = []
 
         # Set a scale attribute that will be used by floors and walls.
         self.scale = scale

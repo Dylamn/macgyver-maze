@@ -105,12 +105,9 @@ class Game:
                 is_crafted = Syringe.craft(self.macgyver.inventory)
 
                 if is_crafted:
-                    # Crafting notif is running ?
-                    if self.notification.is_active:
-                        # Yes, dismiss it.
-                        self.notification.erase()
+                    self.notification.active('crafted').set_timer(3)
                 else:
-                    self.notification.active('missing-items')
+                    self.notification.active('missing-items').set_timer(3)
 
             if keys[K_e]:
                 if self.notification.is_active:
@@ -159,11 +156,11 @@ class Game:
             self.notification.render(self.screen)
 
             # Display the text.
-            pygame.display.flip()
+            pygame.display.update()
 
-    @staticmethod
-    def on_cleanup():
-        pygame.quit()
+    def on_cleanup(self):
+        # pygame.quit()
+        pass
 
     def execute(self):
         """Execute the game loop."""

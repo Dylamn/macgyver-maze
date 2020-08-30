@@ -1,4 +1,5 @@
 import pygame.font
+import time
 
 # Colors
 BLACK = (0, 0, 0)
@@ -29,16 +30,16 @@ class Notification:
             ''
         ],
         "crafted": [
-            'You craft a syringe.',
-            ''
+            'You craft the syringe.',
+            'You are now able to beat the guardian.'
         ],
         "loose": [
-            'You loose. Sorry !',
-            ''
+            'You loose.',
+            'Try again !'
         ],
         "win": [
-            'You win. Great job !',
-            ''
+            'You win.',
+            ' Great job !'
         ],
     }
 
@@ -55,40 +56,65 @@ class Notification:
         self.rect_line2 = None  # The rect of the text.
 
         # Timer
-        self.start = None
+        self.running_time = None
         self.end = None
 
     def render(self, screen):
         """Display the text notification if the notification display is active."""
 
-        # if not self.start >= self.end:
-        if self.__is_active:
-            self.line1 = self.font.render(self.sentences.get(self.__selected_sentence, [""])[0], True, WHITE)
-            self.line2 = self.font.render(self.sentences.get(self.__selected_sentence)[1], True, WHITE)
+        if self.end is not None:
+            # Current time. We'll use this value to check if the notification is expired.
+            self.running_time = time.time()
 
-            self.rect_line1 = self.line1.get_rect()
-            self.rect_line2 = self.line2.get_rect()
+            if self.running_time >= self.end:  # Notification is expired, we'll erase it.
+                self.erase()
 
-            offset_x_line1 = (screen.get_width() - self.rect_line1.width) / 2
-            offset_x_line2 = (screen.get_width() - self.rect_line2.width) / 2
+        if (self.end is not None and self.__is_active) or self.__is_active:
+            if self.__is_active:
+                # Retrieve the size of the screen
+                screen_height, screen_width = screen.get_height(), screen.get_width()
 
-            margin_h = (screen.get_height() - (self.rect_line1.height + self.SPACING_H + self.rect_line2.height)) / 2
-            offset_y_0 = margin_h
-            offset_y_1 = screen.get_height() - margin_h - self.rect_line2.height
+                # Get the sentences which will be displayed.
+                self.line1 = self.font.render(self.sentences.get(self.__selected_sentence)[0], True, WHITE)
+                self.line2 = self.font.render(self.sentences.get(self.__selected_sentence)[1], True, WHITE)
 
-            screen.blit(self.line1, (offset_x_line1, offset_y_0))
-            screen.blit(self.line2, (offset_x_line2, offset_y_1))
+                # Retrieve the rect of each text surfaces.
+                self.rect_line1 = self.line1.get_rect()
+                self.rect_line2 = self.line2.get_rect()
+
+                # Center the surfaces on the X axis.
+                offset_x_line1 = (screen_width - self.rect_line1.width) / 2
+                offset_x_line2 = (screen_width - self.rect_line2.width) / 2
+
+                # Calculate position of the first text line.
+                margin_top = (screen_height - (self.rect_line1.height + self.SPACING_H + self.rect_line2.height)) / 2
+                offset_y_line1 = margin_top
+
+                # Calculate the position of the second text line with the first one.
+                offset_y_line2 = screen_height - margin_top - self.rect_line2.height
+
+                # Finally, draw text on the screen at the calculated coordinates.
+                screen.blit(self.line1, (offset_x_line1, offset_y_line1))
+                screen.blit(self.line2, (offset_x_line2, offset_y_line2))
 
     def active(self, slug_sentence: str):
         """Activate the display of the nofication."""
         self.__is_active = True
         self.__selected_sentence = slug_sentence
 
-        # Use timer for notification
-        # self.start = time.time()
-        # self.end = self.start + 3
+        return self
+
+    def set_timer(self, duration: int):
+        """Set a timer for the notification."""
+
+        # We use the current epoch and add a number of seconds.
+        self.end = time.time() + duration
 
     def erase(self):
         """Desactivate the display of the notification."""
+        if self.end is not None:
+            self.running_time = None
+            self.end = None
+
         self.__is_active = False
         self.__selected_sentence = ""
