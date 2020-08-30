@@ -1,4 +1,5 @@
 from src.app import App
+from src.game import Game
 from src.utils import *
 import pygame
 
@@ -12,10 +13,10 @@ def main():
     # Default size of the screen as a tuple.
     window_size = get_screen_size()
 
-    # Initialize the game.
+    # Initialize the application.
     app = App(size=window_size)
 
-    # Then execute the game loop.
+    # Execute the application.
     app.execute()
 
 
