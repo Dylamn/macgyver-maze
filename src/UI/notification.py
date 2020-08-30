@@ -1,6 +1,4 @@
 import pygame.font
-import time
-import ipdb
 
 # Colors
 BLACK = (0, 0, 0)
@@ -11,7 +9,8 @@ BLUE = (0, 0, 255)
 class Notification:
     """Send text notification to the screen."""
 
-    SPACING_H_TEXT = 10
+    # The Height spacing between the text lines..
+    SPACING_H = 10
 
     # Determines if a notification is active.
     __is_active: bool = False
@@ -25,10 +24,22 @@ class Notification:
             'You can craft the syringe !',
             'Press C to craft.'
         ],
-        "missing-items": 'Items for craft are missing.',
-        "crafted": 'You craft a syringe.',
-        "loose": 'You loose. Sorry !',
-        "win": 'You win. Great job !',
+        "missing-items": [
+            'Items for craft are missing.',
+            ''
+        ],
+        "crafted": [
+            'You craft a syringe.',
+            ''
+        ],
+        "loose": [
+            'You loose. Sorry !',
+            ''
+        ],
+        "win": [
+            'You win. Great job !',
+            ''
+        ],
     }
 
     @property
@@ -37,10 +48,11 @@ class Notification:
 
     def __init__(self, size=50):
         self.font = pygame.font.SysFont(None, size)
-        self.text0 = None  # Font surface
-        self.text1 = None  # Font surface
-        self.rect0 = None  # The rect of the text.
-        self.rect1 = None  # The rect of the text.
+        self.container = None  # Container for text
+        self.line1 = None  # Font surface
+        self.line2 = None  # Font surface
+        self.rect_line1 = None  # The rect of the text.
+        self.rect_line2 = None  # The rect of the text.
 
         # Timer
         self.start = None
@@ -51,21 +63,21 @@ class Notification:
 
         # if not self.start >= self.end:
         if self.__is_active:
-            self.text0 = self.font.render(self.sentences.get(self.__selected_sentence)[0], True, WHITE)
-            self.text1 = self.font.render(self.sentences.get(self.__selected_sentence)[1], True, WHITE)
+            self.line1 = self.font.render(self.sentences.get(self.__selected_sentence, [""])[0], True, WHITE)
+            self.line2 = self.font.render(self.sentences.get(self.__selected_sentence)[1], True, WHITE)
 
-            self.rect0 = self.text0.get_rect()
-            self.rect1 = self.text1.get_rect()
+            self.rect_line1 = self.line1.get_rect()
+            self.rect_line2 = self.line2.get_rect()
 
-            offset_x_0 = (screen.get_width() - self.rect0.width) / 2
-            offset_x_1 = (screen.get_width() - self.rect1.width) / 2
+            offset_x_line1 = (screen.get_width() - self.rect_line1.width) / 2
+            offset_x_line2 = (screen.get_width() - self.rect_line2.width) / 2
 
-            margin_h = (screen.get_height() - (self.rect0.height + self.SPACING_H_TEXT + self.rect1.height)) / 2
+            margin_h = (screen.get_height() - (self.rect_line1.height + self.SPACING_H + self.rect_line2.height)) / 2
             offset_y_0 = margin_h
-            offset_y_1 = screen.get_height() - margin_h - self.rect1.height
+            offset_y_1 = screen.get_height() - margin_h - self.rect_line2.height
 
-            screen.blit(self.text0, (offset_x_0, offset_y_0))
-            screen.blit(self.text1, (offset_x_1, offset_y_1))
+            screen.blit(self.line1, (offset_x_line1, offset_y_0))
+            screen.blit(self.line2, (offset_x_line2, offset_y_1))
 
     def active(self, slug_sentence: str):
         """Activate the display of the nofication."""

@@ -37,4 +37,4 @@ MacGyver will collect every object simply by walking on it. The syringe can be c
 
 To craft the syringe:
 
-Press <kbd>C</kbd>
+Press <kbd>C</kbd> when the text is prompted

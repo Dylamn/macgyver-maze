@@ -40,7 +40,7 @@ def write_config(config, file, size):
 
 def asset(relpath=""):
     """Generate an asset path."""
-    asset_path = base_path(f'resources/{relpath}')
+    asset_path = base_path(f'assets/{relpath}')
 
     assert path.isfile(asset_path), f"The path doesn't indicate a file. Given: {asset_path}"
     assert path.exists(asset_path), "Given file doesn't exists."
@@ -72,3 +72,8 @@ def get_screen_size():
 def scale_position(pos: tuple, scale: tuple):
     """Returns the mapped position of the maze coordinates for the screen."""
     return tuple(point * scaling for point, scaling in zip(pos, scale))
+
+
+def calculate_scale(screen_size: tuple):
+    """Calculate the scaling for the given screen size"""
+    return tuple(round(num / 15) for num in screen_size)
