@@ -5,6 +5,8 @@ from src.UI.menus import options_menu
 from src.game import Game
 
 from pygame.locals import *
+
+from src.mixer import Mixer
 from src.utils import *
 
 BLACK = (0, 0, 0)
@@ -41,6 +43,9 @@ class App:
         main_background = pygame.image.load(asset("background_menu.jpg"))
         self.main_background = pygame.transform.scale(main_background, self.screen_size)
 
+        # Audio
+        self.mixer = Mixer()
+
     def execute(self):
         # Load buttons images.
         play_button = pygame.image.load(asset('play_button.png'))
@@ -52,7 +57,7 @@ class App:
         quit_button_rect = quit_button.get_rect()
 
         # Set the x, y coordinates of the buttons rect.
-        play_button_rect.topleft = (40, 320)
+        play_button_rect.topleft = (40, get_screen_height() - 450)
         options_button_rect.topleft = (40, (play_button_rect.y + play_button_rect.height + 10))
         quit_button_rect.topleft = (40, options_button_rect.y + (options_button_rect.height + 10))
 
@@ -72,7 +77,7 @@ class App:
             if play_button_rect.collidepoint((mouse_x, mouse_y)):
                 if self.click:
                     # Initialize the game.
-                    game = Game(self.screen, self.scale)
+                    game = Game(self.screen, self.mixer, self.scale)
 
                     # Then execute the game loop.
                     game.execute()
@@ -92,16 +97,27 @@ class App:
             # Reset the click attribute to false for each frame.
             self.click = False
 
-            # Wait for an event
-            event = pygame.event.wait()
+            for event in pygame.event.get():
 
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
+                if event.type == KEYDOWN:
+                    keys = pygame.key.get_pressed()
 
-            # If the user click somewhere.
-            if event.type == MOUSEBUTTONDOWN:
-                self.click = True
+                    if keys[K_F1]:
+                        self.mixer.toggle()
+
+                    if keys[K_KP_PLUS] or keys[K_KP_MINUS]:
+                        step = 0.01 if keys[K_KP_PLUS] else -0.01
+
+                        # Decrement/increment the volume by 0.01 (1%)
+                        self.mixer.music_volume = step
+
+                if event.type == QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+                # If the user click somewhere.
+                if event.type == MOUSEBUTTONDOWN:
+                    self.click = True
 
             # Update the display
             pygame.display.update()

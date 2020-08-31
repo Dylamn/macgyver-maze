@@ -5,9 +5,12 @@ from pygame.locals import *
 from src.utils import *
 from src.UI.notification import Notification
 
+# Structures
 from src.maze import Maze
 from src.wall import Wall
 from src.floor import Floor
+
+# Characters
 from src.macgyver import Macgyver
 from src.guardian import Guardian
 
@@ -19,16 +22,19 @@ from src.items.plastictube import PlasticTube
 from src.items.needle import Needle
 from src.items.ether import Ether
 
-# Game constants
-MAZE_PATTERN_FILE = 'maze.txt'
-CAPTION = 'MacGyver Maze'
+# Color constants
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
 
 class Game:
+    """Class which manage the game."""
+
     # A list containing each item that will be placed inside the maze.
     item_kit = [Needle, PlasticTube, Ether]
+
+    # The name of the maze pattern file.
+    MAZE_PATTERN_FILE = 'maze.txt'
 
     # Screen attributes
     screen = None
@@ -37,11 +43,12 @@ class Game:
     __running = False
 
     # No action can be performed when set to true.
-    # This value is used when the player win.
+    # This value is used when the player win or loose.
     __lock = False
 
-    def __init__(self, screen: pygame.Surface, scale: tuple = (48, 48)):
+    def __init__(self, screen: pygame.Surface, mixer, scale: tuple = (48, 48)):
         """Initialize the game."""
+
         screen.fill(BLACK)
 
         # Store the application screen and scaling ratio.
@@ -64,7 +71,7 @@ class Game:
         CraftableItem.containers = self.sprites
 
         # Set maze dependency.
-        self.maze = Maze(self.scale, file_pattern=MAZE_PATTERN_FILE)
+        self.maze = Maze(self.scale, file_pattern=self.MAZE_PATTERN_FILE)
 
         # Retrieve the finish point.
         self.finish_point = scale_position(self.maze.end, self.scale)
@@ -72,6 +79,9 @@ class Game:
         # Init last dependencies.
         self.macgyver = Macgyver(self.maze.start, self.scale)
         self.guardian = Guardian(self.finish_point, self.scale)
+
+        # Audio
+        self.mixer = mixer
 
         # Place items...
         for item in self.item_kit:
@@ -83,7 +93,7 @@ class Game:
     def _init(self):
         """Initialize pygame modules and required stuff like screen, game loop value..."""
 
-        pygame.display.set_caption(CAPTION)
+        pygame.display.set_caption("MacGyver Maze - Game")
         self.notification = Notification(self.scale[0])
 
         self.__running = True
@@ -96,10 +106,15 @@ class Game:
             sys.exit()
 
         if self.__lock:
+            # Lock keys which bring interaction with the game.
             return
 
         if event.type == KEYDOWN:
             keys = pygame.key.get_pressed()
+
+            if keys[K_ESCAPE]:
+                # Go back to the main menu.
+                self.__running = False
 
             if keys[K_c]:
                 is_crafted = Syringe.craft(self.macgyver.inventory)
@@ -124,9 +139,6 @@ class Game:
 
             elif keys[K_LEFT]:
                 self.macgyver.move_left()
-
-            elif keys[K_ESCAPE]:
-                self.__running = False
 
     def on_loop(self):
         """Perform checks, such as checking for colliding sprites."""
@@ -158,10 +170,6 @@ class Game:
             # Display the text.
             pygame.display.update()
 
-    def on_cleanup(self):
-        # pygame.quit()
-        pass
-
     def execute(self):
         """Execute the game loop."""
 
@@ -186,5 +194,3 @@ class Game:
 
                     if self.macgyver.coordinates == self.maze.end:
                         self.__lock = True
-
-        self.on_cleanup()

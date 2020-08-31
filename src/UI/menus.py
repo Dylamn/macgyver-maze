@@ -8,6 +8,7 @@ BLACK = (0, 0, 0)
 def options_menu(screen: pygame.Surface):
     running = True
     screen.fill(BLACK)
+    pygame.display.set_caption('MacGyver Maze - Options')
 
     while running:
         for event in pygame.event.get():
