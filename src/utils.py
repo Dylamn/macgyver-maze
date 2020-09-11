@@ -2,6 +2,8 @@ from os import path
 import configparser
 from pathlib import Path
 
+import pygame
+
 
 def get_config():
     """Get the config file."""
@@ -138,3 +140,17 @@ def is_float(value):
 
     except ValueError:
         return False
+
+
+def exit_app():
+    """Clean up resources and exit the application."""
+    import pygame
+    import sys
+
+    pygame.quit()
+    sys.exit()
+
+
+def hovered(screen: pygame.Surface, image: pygame.Surface, rect: pygame.Rect):
+    # Make the button more opaque when we're hovering it.
+    screen.blit(image.copy(), rect.topleft)

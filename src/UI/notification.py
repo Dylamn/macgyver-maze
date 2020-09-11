@@ -13,6 +13,9 @@ class Notification:
     # The Height spacing between the text lines..
     SPACING_H = 10
 
+    # Margin of the background.
+    MARGIN_BACKGROUND_TEXT = 20
+
     # Determines if a notification is active.
     __is_active: bool = False
 
@@ -93,7 +96,21 @@ class Notification:
                 # Calculate the position of the second text line with the first one.
                 offset_y_line2 = screen_height - margin_top - self.rect_line2.height
 
+                background_width = self.line2.get_width() \
+                    if self.line2.get_width() > self.line1.get_width() else self.line1.get_width()
+
+                # Add a bit of margin
+                background_width += self.MARGIN_BACKGROUND_TEXT
+                background_height = self.rect_line1.height + self.rect_line2.height + self.MARGIN_BACKGROUND_TEXT
+
+                background_x = int((screen.get_width() - background_width) / 2)
+
+                background = pygame.Surface((background_width, background_height))
+                background.set_alpha(128)
+                background.fill((0, 0, 0))
+
                 # Finally, draw text on the screen at the calculated coordinates.
+                screen.blit(background, (background_x, offset_y_line1 - (self.MARGIN_BACKGROUND_TEXT / 2)))
                 screen.blit(self.line1, (offset_x_line1, offset_y_line1))
                 screen.blit(self.line2, (offset_x_line2, offset_y_line2))
 

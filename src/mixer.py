@@ -17,13 +17,17 @@ class Mixer:
     # Volume of the sounds.
     _soundVolume = settings('Audio', 'sound_volume')
 
-    # Dict which contains every musics of the game.
+    # Dict which contains every musics path of the game.
     musics = {
-        "main": asset("sounds/macgyver_theme_song.ogg")
+        'main': asset("sounds/macgyver_theme_song.ogg"),
+        'victory': asset("sounds/victory_fanfare.ogg"),
+        'defeat': asset("sounds/defeat_theme.ogg")
     }
 
     # Dict which contains every sounds of the game.
-    sounds = {}
+    sounds = {
+        'wilhelm_scream': asset("sounds/wilhelm_scream.ogg")
+    }
 
     @property
     def music_volume(self):
@@ -52,7 +56,7 @@ class Mixer:
             self._soundVolume += value
             write_config(section=self.SECTION, key='sound_volume', value=self._soundVolume)
 
-    def __init__(self, **sounds):
+    def __init__(self):
         """Initialize the game mixer."""
 
         pygame.mixer.pre_init(
@@ -62,8 +66,9 @@ class Mixer:
             512  # Buffer. A low buffer makes sounds play (essentially) immediatly.
         )
 
-        if not self.sounds:
-            self.sounds = sounds
+        # Initialize sounds after the pre initialization of the mixer.
+        for sound_name in self.sounds.keys():
+            self.sounds[sound_name] = pygame.mixer.Sound(self.sounds[sound_name])
 
         # Music of the main menu.
         self.set_music('main')

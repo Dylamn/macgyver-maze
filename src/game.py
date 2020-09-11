@@ -1,7 +1,6 @@
 import sys
-import pygame
-from pygame.locals import *
 
+from src.UI.menus import *
 from src.utils import *
 from src.UI.notification import Notification
 
@@ -51,6 +50,8 @@ class Game:
 
         screen.fill(BLACK)
 
+        pygame.display.set_caption("MacGyver Maze - Game")
+
         # Store the application screen and scaling ratio.
         self.screen = screen
         self.scale = scale
@@ -83,19 +84,15 @@ class Game:
         # Audio
         self.mixer = mixer
 
+        # Bootstrap the notifications.
+        self.notification = Notification(self.scale[0])
+
         # Place items...
         for item in self.item_kit:
             coords = self.maze.random_coordinates()
             item(coords, self.scale)
 
-        self._init()
-
-    def _init(self):
-        """Initialize pygame modules and required stuff like screen, game loop value..."""
-
-        pygame.display.set_caption("MacGyver Maze - Game")
-        self.notification = Notification(self.scale[0])
-
+        # Switch the value for the game loop to True.
         self.__running = True
 
     def on_event(self, event):
@@ -112,6 +109,9 @@ class Game:
         if event.type == KEYDOWN:
             keys = pygame.key.get_pressed()
 
+            if keys[K_F1]:
+                self.mixer.toggle()
+
             if keys[K_ESCAPE]:
                 # Go back to the main menu.
                 self.__running = False
@@ -122,7 +122,7 @@ class Game:
                 if is_crafted:
                     self.notification.active('crafted').set_timer(3)
                 else:
-                    self.notification.active('missing-items').set_timer(3)
+                    self.notification.active('missing-items').set_timer(2)
 
             if keys[K_e]:
                 if self.notification.is_active:
@@ -154,21 +154,21 @@ class Game:
         for item in pygame.sprite.spritecollide(self.macgyver, self.items, False):
             item.collect(self.macgyver.inventory)
 
-        if self.macgyver.coordinates == self.finish_point:
-            self.notification.active('win')
+        # if self.macgyver.coordinates == self.finish_point:
+        #     self.notification.active('win')
 
     def render(self):
         """Make the render of the game."""
         dirty = self.sprites.draw(self.screen)
-
-        # Only update sprites, not the whole screen.
-        pygame.display.update(dirty)
 
         if self.notification.is_active:
             self.notification.render(self.screen)
 
             # Display the text.
             pygame.display.update()
+
+        # Only update sprites, not the whole screen.
+        pygame.display.update(dirty)
 
     def execute(self):
         """Execute the game loop."""
@@ -189,8 +189,14 @@ class Game:
             if self.guardian.alive():
                 # MacGyver's in front of the guardian.
                 if self.macgyver.rect in self.guardian.adjacent_tiles:
+                    self.mixer.sounds['wilhelm_scream'].play()
                     # Calculates whether MacGyver will die or put the guardian to sleep.
                     self.__running = self.guardian.is_beatable(self.macgyver)
 
-                    if self.macgyver.coordinates == self.maze.end:
+                    if not self.macgyver.alive():  # MacGyver is dead, display the defeat screen.
                         self.__lock = True
+                        self.__running = defeat_screen(self.screen, self.mixer)
+
+            if self.macgyver.coordinates == self.finish_point:  # MacGyver win, display the victory screen.
+                self.__lock = True
+                self.__running = victory_screen(self.screen, self.mixer)

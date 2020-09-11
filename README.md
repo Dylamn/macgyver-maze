@@ -33,7 +33,7 @@ The game play musics and sounds.
 
 If you want to decrease/increase the volume, 
 you can press either <kbd>-</kbd> or <kbd>+</kbd> keys of the numeric keypad.
-If you simply want to mute the entirely audio, press <kbd>F1</kbd>.
+If you simply want to mute/unmute the audio, press <kbd>F1</kbd>.
 
 To move MacGyver, use the keyboard arrows:
 

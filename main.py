@@ -1,5 +1,4 @@
 from src.app import App
-from src.game import Game
 from src.utils import *
 import pygame
 
