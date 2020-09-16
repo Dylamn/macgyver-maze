@@ -39,7 +39,8 @@ To move MacGyver, use the keyboard arrows:
 
 <kbd>←</kbd> <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd>
 
-MacGyver will collect every object simply by walking on it. The syringe can be crafted when MacGyver gather all necessary items.
+MacGyver will collect every object simply by walking on it. 
+The syringe can be crafted when MacGyver gather all necessary items.
 
 To craft the syringe:
 

@@ -3,7 +3,7 @@ import pygame.rect as pyrect
 import pygame.image
 from operator import sub
 from src.utils import asset
-from src.macgyver import Macgyver
+from src.characters.macgyver import Macgyver
 
 from src.items.syringe import Syringe
 

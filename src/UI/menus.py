@@ -18,7 +18,9 @@ def options_menu(screen: pygame.Surface):
                 exit_app()
 
             if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
+                keys = pygame.key.get_pressed()
+
+                if keys[K_ESCAPE]:
                     running = False
 
         pygame.display.update()
@@ -31,34 +33,41 @@ def victory_screen(screen: pygame.Surface, mixer: Mixer):
 
     banner = pygame.transform.scale(pygame.image.load(asset('victory_banner.png')), get_screen_size())
 
-    running = loop_menu(screen, banner, mixer)
+    next_action = loop_menu(screen, banner, 'victory', mixer)
 
     mixer.set_music('main')
 
-    return running
+    return next_action
 
 
-def defeat_screen(screen: pygame.Surface, mixer: Mixer):
+def defeat_screen(screen: pygame.Surface,mixer: Mixer):
     pygame.display.set_caption('MacGyver Maze - Defeat')
 
     mixer.set_music('defeat')
 
     banner = pygame.transform.scale(pygame.image.load(asset('defeat_banner.png')), get_screen_size())
 
-    running = loop_menu(screen, banner, mixer)
+    next_action = loop_menu(screen, banner, 'defeat', mixer)
 
-    mixer.set_music('main')
+    if next_action[1] != 'quit':
+        mixer.set_music('main')
 
-    return running
+    return next_action
 
 
-def loop_menu(screen: pygame.Surface, banner, mixer):
-    """Handle events of the application."""
+def loop_menu(screen: pygame.Surface, banner: pygame.Surface, menu_type: str, mixer: Mixer):
+    """Handle events of the victory/defeat menus."""
     running = True
+    next_action = None
 
     back_button = pygame.image.load(asset('back_button.png'))
     back_button.fill((255, 255, 255, 192), None, pygame.BLEND_RGBA_MULT)
     back_rect = back_button.get_rect()
+
+    if menu_type == 'victory':
+        pass
+    elif menu_type == 'defeat':
+        pass
 
     back_rect.topleft = ((get_screen_width() / 2 - (back_rect.width / 2)), get_screen_height() * 0.8)
 
@@ -76,6 +85,7 @@ def loop_menu(screen: pygame.Surface, banner, mixer):
             hovered(screen, back_button, back_rect)
             if click:
                 running = False
+                next_action = 'quit'
 
         # Reset the click state at each frame.
         click = False
@@ -85,16 +95,20 @@ def loop_menu(screen: pygame.Surface, banner, mixer):
                 exit_app()
 
             if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    running = False
+                keys = pygame.key.get_pressed()
 
-                if event.key == K_F1:
-                    mixer.toggle()
+                mixer.keys_interaction(keys)
+
+                if keys[K_ESCAPE]:
+                    running = False
 
             # If the user click somewhere.
             if event.type == MOUSEBUTTONDOWN:
                 click = True
 
+        if mixer.notification.is_active:
+            mixer.notification.render(screen)
+
         pygame.display.update()
 
-    return running
+    return next_action

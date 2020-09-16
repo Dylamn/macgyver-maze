@@ -1,6 +1,8 @@
 import pygame.sprite as sprite
 import pygame.image
 
+from pygame.locals import K_UP, K_DOWN, K_LEFT, K_RIGHT
+
 from src.utils import asset, scale_position
 
 
@@ -84,6 +86,20 @@ class Macgyver(sprite.Sprite):
         """Move MacGyver to the left."""
         self._old_coordinates = self.rect.topleft
         self.rect = self.rect.move(self.LEFT)
+
+    def handle_keys(self, keys):
+        """Handle keys which interacts with MacGyver."""
+        if keys[K_UP]:
+            self.move_up()
+
+        elif keys[K_RIGHT]:
+            self.move_right()
+
+        elif keys[K_DOWN]:
+            self.move_down()
+
+        elif keys[K_LEFT]:
+            self.move_left()
 
     def _set_scale_moves(self, scale: tuple):
         """Updates MacGyver's Motion Scale to match the screen scale."""

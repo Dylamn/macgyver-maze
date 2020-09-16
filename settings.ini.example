@@ -4,3 +4,4 @@ size=720x720
 [Audio]
 music_volume=0.5
 sound_volume=0.5
+muted=0

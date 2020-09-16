@@ -22,19 +22,25 @@ class Notification:
     # Value of the current notification.
     __selected_sentence: str = None
 
+    # A part of the text which is dynamic.
+    # This part will replace by the @ character in the sentences.
+    __dynamic_part: str = None
+
     # All values that a notification can display.
     sentences = {
+        "volume": [
+            'Volume : @'
+        ],
         "craft-available": [
             'You can craft the syringe !',
             'Press C to craft.'
         ],
         "missing-items": [
             'Items for craft are missing.',
-            ''
         ],
         "crafted": [
-            'You craft the syringe.',
-            'You are now able to beat the guardian.'
+            'You crafted the syringe.',
+            'You can now beat the guardian !'
         ],
         "loose": [
             'You loose.',
@@ -42,19 +48,26 @@ class Notification:
         ],
         "win": [
             'You win.',
-            ' Great job !'
+            'Great job !'
         ],
     }
 
     @property
     def is_active(self) -> bool:
+        """Get the boolean which determines if a notification is active or not."""
         return self.__is_active
+
+    @is_active.setter
+    def is_active(self, value):
+        """Setter for __is_active attribute."""
+        self.__is_active = value
 
     def __init__(self, size=50):
         self.font = pygame.font.SysFont(None, size)
         self.container = None  # Container for text
-        self.line1 = None  # Font surface
-        self.line2 = None  # Font surface
+        # Font surface
+        self.line1 = None
+        self.line2 = None
         self.rect_line1 = None  # The rect of the text.
         self.rect_line2 = None  # The rect of the text.
 
@@ -72,52 +85,72 @@ class Notification:
             if self.running_time >= self.end:  # Notification is expired, we'll erase it.
                 self.erase()
 
-        if (self.end is not None and self.__is_active) or self.__is_active:
-            if self.__is_active:
-                # Retrieve the size of the screen
-                screen_height, screen_width = screen.get_height(), screen.get_width()
+        if (self.end is not None and self.is_active) or self.is_active:
+            # Retrieve the size of the screen
+            screen_height, screen_width = screen.get_height(), screen.get_width()
 
-                # Get the sentences which will be displayed.
-                self.line1 = self.font.render(self.sentences.get(self.__selected_sentence)[0], True, WHITE)
+            # Get the sentences which will be displayed.
+            sentence_1 = self.sentences.get(self.__selected_sentence)[0]
+            if sentence_1.find('@'):
+                sentence_1 = sentence_1.replace('@', self.__dynamic_part)
+
+            self.line1 = self.font.render(sentence_1, True, WHITE)
+
+            # Retrieve the rect of each text surfaces.
+            self.rect_line1 = self.line1.get_rect()
+
+            # Calculate position of the first text line.
+            margin_top = (screen_height - (self.rect_line1.height * 2 + self.SPACING_H)) / 2
+            offset_x_line1 = (screen_width - self.rect_line1.width) / 2
+            offset_y_line1 = margin_top
+
+            # Initialize vars position of line 2
+            offset_x_line2 = None
+            offset_y_line2 = None
+
+            background_width = self.line1.get_width()
+
+            # Add a bit of margin
+            background_width += self.MARGIN_BACKGROUND_TEXT
+            background_height = self.rect_line1.height + self.MARGIN_BACKGROUND_TEXT
+
+            # The notification has a second line.
+            if len(self.sentences.get(self.__selected_sentence)) == 2:
                 self.line2 = self.font.render(self.sentences.get(self.__selected_sentence)[1], True, WHITE)
-
-                # Retrieve the rect of each text surfaces.
-                self.rect_line1 = self.line1.get_rect()
                 self.rect_line2 = self.line2.get_rect()
-
-                # Center the surfaces on the X axis.
-                offset_x_line1 = (screen_width - self.rect_line1.width) / 2
                 offset_x_line2 = (screen_width - self.rect_line2.width) / 2
-
-                # Calculate position of the first text line.
-                margin_top = (screen_height - (self.rect_line1.height + self.SPACING_H + self.rect_line2.height)) / 2
-                offset_y_line1 = margin_top
-
                 # Calculate the position of the second text line with the first one.
                 offset_y_line2 = screen_height - margin_top - self.rect_line2.height
 
-                background_width = self.line2.get_width() \
-                    if self.line2.get_width() > self.line1.get_width() else self.line1.get_width()
+                # The background width must have the width of the longest line.
+                background_width = max(self.line1.get_width(), self.line2.get_width())
+                # Add the height of the line2 to the background height.
+                background_height += self.rect_line2.height
 
-                # Add a bit of margin
-                background_width += self.MARGIN_BACKGROUND_TEXT
-                background_height = self.rect_line1.height + self.rect_line2.height + self.MARGIN_BACKGROUND_TEXT
+            background_x = int((screen.get_width() - background_width) / 2)
 
-                background_x = int((screen.get_width() - background_width) / 2)
+            # Create the background surface and change the alpha.
+            background = pygame.Surface((background_width, background_height))
+            background.set_alpha(128)
+            background.fill((0, 0, 0))
 
-                background = pygame.Surface((background_width, background_height))
-                background.set_alpha(128)
-                background.fill((0, 0, 0))
+            # Finally, draw text on the screen at the calculated coordinates.
+            screen.blit(background, (background_x, offset_y_line1 - (self.MARGIN_BACKGROUND_TEXT / 2)))
+            screen.blit(self.line1, (offset_x_line1, offset_y_line1))
 
-                # Finally, draw text on the screen at the calculated coordinates.
-                screen.blit(background, (background_x, offset_y_line1 - (self.MARGIN_BACKGROUND_TEXT / 2)))
-                screen.blit(self.line1, (offset_x_line1, offset_y_line1))
+            if self.line2 is not None:
                 screen.blit(self.line2, (offset_x_line2, offset_y_line2))
 
-    def active(self, slug_sentence: str):
+    def active(self, slug_sentence: str, dynamic_part=None):
         """Activate the display of the nofication."""
-        self.__is_active = True
+
+        if self.is_active:
+            # Erase the current notification
+            self.erase()
+
+        self.is_active = True
         self.__selected_sentence = slug_sentence
+        self.__dynamic_part = str(dynamic_part)
 
         return self
 
@@ -133,5 +166,18 @@ class Notification:
             self.running_time = None
             self.end = None
 
-        self.__is_active = False
+        self.is_active = False
+
+        self.reset_text()
+
+    def reset_text(self):
+        """Reset variables used for text"""
+        self.line1 = None
+        self.line2 = None
+
+        self.rect_line1 = None
+        self.rect_line2 = None
+
         self.__selected_sentence = ""
+        self.__dynamic_part = ""
+

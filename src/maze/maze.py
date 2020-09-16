@@ -1,8 +1,8 @@
 import random
 
 from src.utils import base_path
-from src.wall import Wall
-from src.floor import Floor
+from src.maze.wall import Wall
+from src.maze.floor import Floor
 
 
 class Maze:
@@ -26,13 +26,18 @@ class Maze:
         self.empty_tiles = {}
 
         # Starting and ending point coordinates.
-        self.start = self.find_points('S')
-        self.end = self.find_points('F')
+        self.start = self.find_points('s')
+        self.end = self.find_points('f')
 
         self._init()
 
     def _init(self):
         """Setup the maze grid."""
+
+        # Initialize vars which will contains the coordinates of  the guardian and macgyver
+        mac_gyver_pos = None
+        guardian_pos = None
+
         for y, columns in enumerate(self.grid):
             for x, tile in enumerate(columns):
 
@@ -48,13 +53,24 @@ class Maze:
                     # Add a new floor tile.
                     Floor(x, y, self.scale)
 
+                    if tile == "S":
+                        # The tile where MacGyver will start
+                        mac_gyver_pos = (x, y)
+                    elif tile == "F":
+                        # The tile where the guardian will stand
+                        guardian_pos = (x, y)
+
+        # At the end, we remove the tiles adjacent to macgyver and the guardian from the list of empty tiles.
+        self._remove_adjacent_coordinates(mac_gyver_pos)
+        self._remove_adjacent_coordinates(guardian_pos)
+
     def find_points(self, wanted: str):
         """Find the coordinates of the specified point (start or end)"""
         for y, columns in enumerate(self.grid):
             for x, tile in enumerate(columns):
 
                 # Turn both strings into lowercase because "S" or "F" can be lowercase in the pattern file.
-                if tile.lower() == wanted.lower():
+                if tile.lower() == wanted:
                     return x, y
 
     def random_coordinates(self):

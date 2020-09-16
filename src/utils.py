@@ -30,9 +30,7 @@ def settings(section=None, option=None):
     try:
         value = config[section][option]
     except KeyError:
-        default_size = '720x720'
-
-        write_config(config, section='Interface', key='size', value=default_size)
+        write_default_config()
 
         value = config[section][option]
     finally:
@@ -41,6 +39,33 @@ def settings(section=None, option=None):
             return config[section].getfloat(option)
         else:
             return value
+
+
+def write_default_config():
+    """Write a default config file."""
+    default_path = r'settings.ini'
+
+    with open(default_path, 'w') as configfile:
+        config = configparser.ConfigParser()
+
+        config.read(default_path)
+
+        # Add sections
+        config.add_section('Interface')
+        config.add_section('Audio')
+
+        # Write default section options.
+        config['Interface'] = {
+            'size': '720x720',
+        }
+
+        config['Audio'] = {
+            'music_volume': '0.5',
+            'sound_volume': '0.5',
+            'muted': '0',
+        }
+
+        config.write(configfile, space_around_delimiters=False)
 
 
 def write_config(config=None, section=None, key=None, value=None, file_path=r'settings.ini'):
@@ -75,7 +100,6 @@ def config_section_map(config, section):
             dict_section[option] = config.get(section, option)
 
         except configparser.NoOptionError:
-            print("exception on %s!" % option)
             dict_section[option] = None
 
     return dict_section

@@ -1,8 +1,9 @@
 from src.UI.menus import *
-from src.game import Game
+from src.UI.notification import Notification
 
 from pygame.locals import *
 
+from src.game import Game
 from src.mixer import Mixer
 from src.utils import *
 
@@ -44,8 +45,11 @@ class App:
         main_background = pygame.image.load(asset("background_menu.jpg"))
         self.main_background = pygame.transform.scale(main_background, self.screen_size)
 
+        # Bootstrap the notifications.
+        self.notification = Notification(self.scale[0])
+
         # Audio
-        self.mixer = Mixer()
+        self.mixer = Mixer(self.notification)
 
     def execute(self):
         # Load buttons images.
@@ -88,7 +92,7 @@ class App:
 
                 if self.click:
                     # Initialize the game.
-                    game = Game(self.screen, self.mixer, self.scale)
+                    game = Game(self.screen, self.mixer, self.notification, self.scale)
 
                     # Then execute the game loop.
                     game.execute()
@@ -116,14 +120,8 @@ class App:
                 if event.type == KEYDOWN:
                     keys = pygame.key.get_pressed()
 
-                    if keys[K_F1]:
-                        self.mixer.toggle()
-
-                    if keys[K_KP_PLUS] or keys[K_KP_MINUS]:
-                        step = 0.01 if keys[K_KP_PLUS] else -0.01
-
-                        # Decrement/increment the volume by 0.01 (1%)
-                        self.mixer.music_volume = step
+                    # Handle keys which interact with the audio
+                    self.mixer.keys_interaction(keys)
 
                 if event.type == QUIT:
                     exit_app()
@@ -131,6 +129,9 @@ class App:
                 # If the user click somewhere.
                 if event.type == MOUSEBUTTONDOWN:
                     self.click = True
+
+            if self.notification.is_active:
+                self.notification.render(self.screen)
 
             # Update the display
             pygame.display.update()
