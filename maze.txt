@@ -1,5 +1,5 @@
 ###############
-# #   #   #  S#
+# #   #   #   #
 #    ## #   ###
 ####  # ### # #
 #  #     #    #
@@ -11,7 +11,7 @@
 # ####  # ### #
 # #    #  #   #
 #   # ##  # # #
-#  #  #  #    #
+#  #  # S#    #
 #######F#######
 
 ; Comments section (Those lines will be ignored in the parsing process.)

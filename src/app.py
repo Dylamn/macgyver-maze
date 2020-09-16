@@ -54,9 +54,9 @@ class App:
     def execute(self):
         # Load buttons images.
         buttons = {
-            "play": pygame.image.load(asset('play_button.png')),
-            "options": pygame.image.load(asset('options_button.png')),
-            "quit": pygame.image.load(asset('quit_button.png'))
+            "play": pygame.image.load(asset('buttons/play.png')),
+            "options": pygame.image.load(asset('buttons/options.png')),
+            "quit": pygame.image.load(asset('buttons/quit.png'))
         }
 
         # Add a bit of transparency to the buttons (we'll make them more opaque when hovering it).
@@ -100,11 +100,15 @@ class App:
                     # Remove resources.
                     del game
 
+                    # Reset the standard caption.
+                    pygame.display.set_caption(self.NAME)
+
             if buttons_rect.get('options').collidepoint((mouse_x, mouse_y)):
                 hovered(self.screen, buttons['options'], buttons_rect['options'])
 
                 if self.click:
                     options_menu(self.screen)
+                    pygame.display.set_caption(self.NAME)
 
             if buttons_rect.get('quit').collidepoint((mouse_x, mouse_y)):
                 hovered(self.screen, buttons['quit'], buttons_rect['quit'])

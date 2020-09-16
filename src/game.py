@@ -191,7 +191,7 @@ class Game:
         elif next_action == 'quit':
             exit_app()
 
-        elif next_action == 'back_to_menu':
+        elif next_action == 'back':
             self.__running = False
 
     def reset(self):
