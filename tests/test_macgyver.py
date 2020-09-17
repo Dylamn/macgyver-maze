@@ -1,7 +1,7 @@
 import pygame
 import unittest
 
-from src.macgyver import Macgyver
+from src.characters.macgyver import Macgyver
 
 
 class MacGyverTestCase(unittest.TestCase):

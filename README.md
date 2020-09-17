@@ -27,14 +27,35 @@ You have to run the file as a script with the python interpreter:
 $ python3 main.py
 ```
 
+## Game settings
+There's a default settings file which the game use that can be changed (you must change them when the game isn't running)
+
+The game is provided with a minimum resolution of 640x640, therefore, 
+it is not recommended to save a lower resolution than the one mentioned above to ensure proper working of the game.
+
 ## Game controls
+
+First, if you want to go back to the previous menu, you can press the <kbd>echap</kbd> key (your game session is not reset)
+The game play musics and sounds.
+
+If you want to decrease/increase the volume, 
+you can press either <kbd>-</kbd> or <kbd>+</kbd> keys of the numeric keypad.
+If you simply want to mute/unmute the audio, press <kbd>F1</kbd>.
 
 To move MacGyver, use the keyboard arrows:
 
 <kbd>←</kbd> <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd>
 
-MacGyver will collect every object simply by walking on it. The syringe can be crafted when MacGyver gather all necessary items.
+or, if you prefer you can use the classic,
+<kbd>w</kbd> <kbd>a</kbd> <kbd>s</kbd> <kbd>d</kbd> for qwerty, 
+<kbd>z</kbd> <kbd>q</kbd> <kbd>s</kbd> <kbd>d</kbd> for azerty, keyboards.
+
+MacGyver will collect every object simply by walking on it. 
+The syringe can be crafted when MacGyver gather all necessary items.
 
 To craft the syringe:
 
 Press <kbd>C</kbd> when the text is prompted
+
+
+Hope you'll like it !

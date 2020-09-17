@@ -1,9 +1,9 @@
 import unittest
 import pygame
 
-from src.maze import Maze
-from src.wall import Wall
-from src.floor import Floor
+from src.maze.maze import Maze
+from src.maze.wall import Wall
+from src.maze.floor import Floor
 
 
 class MazeTestCase(unittest.TestCase):
