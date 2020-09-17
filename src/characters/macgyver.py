@@ -1,7 +1,7 @@
 import pygame.sprite as sprite
 import pygame.image
 
-from pygame.locals import K_UP, K_DOWN, K_LEFT, K_RIGHT
+from pygame.locals import K_UP, K_DOWN, K_LEFT, K_RIGHT, K_w, K_a, K_s, K_d
 
 from src.utils import asset, scale_position
 
@@ -89,16 +89,18 @@ class Macgyver(sprite.Sprite):
 
     def handle_keys(self, keys):
         """Handle keys which interacts with MacGyver."""
-        if keys[K_UP]:
+
+        # The game handle movements with standard directional keys (w, a, s, d for qwerty and z, q, s, d for azerty)
+        if keys[K_UP] or keys[K_w]:
             self.move_up()
 
-        elif keys[K_RIGHT]:
+        elif keys[K_RIGHT] or keys[K_d]:
             self.move_right()
 
-        elif keys[K_DOWN]:
+        elif keys[K_DOWN] or keys[K_s]:
             self.move_down()
 
-        elif keys[K_LEFT]:
+        elif keys[K_LEFT] or keys[K_a]:
             self.move_left()
 
     def _set_scale_moves(self, scale: tuple):

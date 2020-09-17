@@ -55,6 +55,9 @@ class ICraftableItem(metaclass=ABCMeta):
     # Image that represents the object.
     _image_file = None
 
+    # Determines if the item can be crafted
+    craftable = False
+
     # The list of items needed for the craft of this item.
     items_required = []
 

@@ -108,7 +108,7 @@ class Game:
                 is_crafted = Syringe.craft(self.macgyver.inventory)
 
                 if is_crafted:
-                    self.notification.active('crafted').set_timer(3)
+                    self.notification.active('crafted').set_timer(2)
                 else:
                     self.notification.active('missing-items').set_timer(2)
 
@@ -121,8 +121,10 @@ class Game:
     def on_loop(self):
         """Perform checks, such as checking for colliding sprites."""
 
-        if Syringe.can_be_crafted(self.macgyver.inventory):
-            self.notification.active('craft-available')
+        if not Syringe.craftable:
+            if Syringe.can_be_crafted(self.macgyver.inventory):
+                Syringe.craftable = True
+                self.notification.active('craft-available').set_timer(2)
 
         # Check if MacGyver threw himself against a wall...
         if pygame.sprite.spritecollide(self.macgyver, self.walls, False):

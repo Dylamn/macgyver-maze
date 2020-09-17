@@ -1,4 +1,3 @@
-import pygame
 from pygame.locals import *
 
 from src.mixer import Mixer
@@ -6,10 +5,11 @@ from src.utils import *
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-MARGIN = 20
+MARGIN = 40
+LINE_SPACING = get_screen_height() / 8
 
 
-def help_menu(screen: pygame.Surface):
+def help_menu(screen: pygame.Surface, mixer: Mixer):
     running = True
 
     # Create the background of the menu (transparent black)
@@ -25,70 +25,77 @@ def help_menu(screen: pygame.Surface):
     back_button = pygame.image.load(asset('buttons/back.png'))
     # back_button.fill((255, 255, 255, 192), None, BLEND_RGBA_MULT)
     back_button_rect = back_button.get_rect()
-    back_button_rect.topleft = (MARGIN, MARGIN)
+    back_button_rect.topleft = (
+        get_screen_width() / 2 - (back_button_rect.width / 2),
+        get_screen_height() - back_button_rect.height - MARGIN
+    )
 
-    # Y offset for arrow keys
-    arrow_keys_offset_y = get_screen_height() / 3
+    # Y offset for lines
+    offset_line1 = LINE_SPACING
+    offset_line2 = offset_line1 + LINE_SPACING
+    offset_line3 = offset_line2 + LINE_SPACING
+    offset_line4 = offset_line3 + LINE_SPACING
 
-    # Initialize each key images
-    # First, Arrow keys
-    key_up = pygame.image.load(asset('keys/key_up.png'))
-    key_up_rect = key_up.get_rect()
-
-    key_right = pygame.image.load(asset('keys/key_right.png'))
-    key_right_rect = key_right.get_rect()
+    # Initialize each key image and associate coordinates for each image.
+    # Line 1 - Start with arrow keys. These will be displayed with the same layout as on a conventional keyboard.
+    key_left = pygame.image.load(asset('keys/key_left.png'))
+    key_left_rect = key_left.get_rect()
+    key_left_rect.topleft = (MARGIN, offset_line1)
 
     key_down = pygame.image.load(asset('keys/key_down.png'))
     key_down_rect = key_down.get_rect()
+    key_down_rect.topleft = (key_left_rect.right, offset_line1)
 
-    key_left = pygame.image.load(asset('keys/key_left.png'))
-    key_left_rect = key_left.get_rect()
+    key_up = pygame.image.load(asset('keys/key_up.png'))
+    key_up_rect = key_up.get_rect()
+    key_up_rect.topleft = (key_down_rect.left, (offset_line1 - key_down_rect.height))
 
-    # C key
+    key_right = pygame.image.load(asset('keys/key_right.png'))
+    key_right_rect = key_right.get_rect()
+    key_right_rect.topleft = (key_down_rect.right, offset_line1)
+
+    # Line 2 - C key
     key_c = pygame.image.load(asset('keys/key_c.png'))
     key_c_rect = key_c.get_rect()
-    key_c_rect.topleft = (MARGIN, get_screen_height() / 2)
+    key_c_rect.topleft = (MARGIN, offset_line2)
 
-    # F1 key
+    # Line 3 - F1 key
     key_f1 = pygame.image.load(asset('keys/key_f1.png'))
     key_f1_rect = key_f1.get_rect()
-    key_f1_rect.topleft = (MARGIN, get_screen_height() / 1.5)
+    key_f1_rect.topleft = (MARGIN, offset_line3)
 
-    # + & - numeric keys
+    # Line 4 - numeric keys - & +
     key_minus = pygame.image.load(asset('keys/key_n_minus.png'))
     key_minus_rect = key_minus.get_rect()
-    key_minus_rect.topleft = (MARGIN, get_screen_height() / 1.25)
+    key_minus_rect.topleft = (MARGIN, offset_line4)
 
     key_plus = pygame.image.load(asset('keys/key_n_plus.png'))
     key_plus_rect = key_plus.get_rect()
-    key_plus_rect.topleft = (key_minus_rect.right, get_screen_height() / 1.25)
+    key_plus_rect.topleft = (key_minus_rect.right, offset_line4)
 
-    # Generates coordinates for each images.
-    # The arrow keys will be displayed with the same layout as on a conventional keyboard.
-    key_left_rect.topleft = (MARGIN, arrow_keys_offset_y)
-    key_down_rect.topleft = (key_left_rect.right, arrow_keys_offset_y)
-    key_up_rect.topleft = (key_down_rect.left, (arrow_keys_offset_y - key_down_rect.height))
-    key_right_rect.topleft = (key_down_rect.right, arrow_keys_offset_y)
-
-    # Create arrow keys caption
-    arrow_keys_caption = font.render("Move", True, WHITE)
+    # Now, create a caption for each key
+    # Arrow keys caption
+    arrow_keys_caption = font.render("Move MacGyver", True, WHITE)
     arrow_keys_caption_rect = arrow_keys_caption.get_rect()
-    arrow_keys_caption_rect.topleft = (key_right_rect.right + MARGIN, arrow_keys_offset_y - key_left_rect.height / 2),
+    arrow_keys_caption_rect.topleft = (key_right_rect.right + MARGIN, offset_line1),
+
+    # Get the X axis of the first caption, we'll align every captions based on this one.
+    offset_caption_x = arrow_keys_caption_rect.left
 
     # C key caption
     key_c_caption = font.render("Craft the syringe", True, WHITE)
     key_c_caption_rect = key_c_caption.get_rect()
-    key_c_caption_rect.topleft = (key_c_rect.right + MARGIN, (get_screen_height() / 2) - 3)
+    key_c_caption_rect.topleft = (offset_caption_x, offset_line2)
 
     # F1 key caption
     f1_key_caption = font.render("Mute/unmute the volume", True, WHITE)
     f1_key_caption_rect = f1_key_caption.get_rect()
-    f1_key_caption_rect.topleft = (key_f1_rect.right + MARGIN, get_screen_height() / 1.5)
+    f1_key_caption_rect.topleft = (offset_caption_x, offset_line3)
 
     # -/+ key caption
     volume_key_caption = font.render("Increase/decrease volume", True, WHITE)
     volume_key_caption_rect = volume_key_caption.get_rect()
-    volume_key_caption_rect.topleft = (key_plus_rect.right + MARGIN, get_screen_height() / 1.25)
+    volume_key_caption_rect.topleft = (offset_caption_x, offset_line4)
 
     # Initialize click variable which will determines if the user click or not.
     click = False
@@ -123,21 +130,8 @@ def help_menu(screen: pygame.Surface):
                 # We'll leave the menu
                 running = False
 
-        # Reset the click attribute to false for each frame.
-        click = False
-
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                exit_app()
-
-            if event.type == KEYDOWN:
-                keys = pygame.key.get_pressed()
-
-                if keys[K_ESCAPE]:
-                    running = False
-
-            if event.type == MOUSEBUTTONDOWN:
-                click = True
+        if running:
+            click, running, _ = handle_keys_event(mixer)
 
         pygame.display.update()
 
@@ -154,7 +148,8 @@ def victory_screen(screen: pygame.Surface, mixer: Mixer):
 
     next_action = loop_menu(screen, banner, 'victory', mixer)
 
-    mixer.set_music('main')
+    if next_action != 'quit':
+        mixer.set_music('main')
 
     return next_action
 
@@ -169,7 +164,7 @@ def defeat_screen(screen: pygame.Surface, mixer: Mixer):
 
     next_action = loop_menu(screen, banner, 'defeat', mixer)
 
-    if next_action[1] != 'quit':
+    if next_action != 'quit':
         mixer.set_music('main')
 
     return next_action
@@ -189,8 +184,14 @@ def loop_menu(screen: pygame.Surface, banner: pygame.Surface, menu_type: str, mi
     original_exit_button = pygame.image.load(asset('buttons/exit_game.png'))
 
     # Scale size of buttons
-    back_button = pygame.transform.scale(original_back_button, (int(get_screen_width() / 4), 70))
-    exit_button = pygame.transform.scale(original_exit_button, (int(get_screen_width() / 4), 70))
+    back_button = pygame.transform.scale(
+        original_back_button,
+        (int(get_screen_width() / 4), original_back_button.get_height())
+    )
+    exit_button = pygame.transform.scale(
+        original_exit_button,
+        (int(get_screen_width() / 4), original_exit_button.get_height())
+    )
 
     # Initialize retry button variables
     retry_button = None
@@ -205,8 +206,10 @@ def loop_menu(screen: pygame.Surface, banner: pygame.Surface, menu_type: str, mi
     if menu_type == 'defeat':
         # We'll display the retry button only when the user doesn't win.
         original_retry_button = pygame.image.load(asset('buttons/retry.png'))
-        retry_button = pygame.transform.scale(original_retry_button, (int(get_screen_width() / 4), 70))
-        retry_button.fill((255, 255, 255, 120), None, pygame.BLEND_RGBA_MULT)
+        retry_button = pygame.transform.scale(
+            original_retry_button, (int(get_screen_width() / 4), 70)
+        )
+        retry_button.fill((255, 255, 255, 192), None, pygame.BLEND_RGBA_MULT)
         retry_rect = retry_button.get_rect()
         retry_rect.topleft = (
             get_screen_width() / 2 - (retry_rect.width / 2),
@@ -253,24 +256,8 @@ def loop_menu(screen: pygame.Surface, banner: pygame.Surface, menu_type: str, mi
                 running = False
                 next_action = 'quit'
 
-        # Reset the click state at each frame.
-        click = False
-
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                exit_app()
-
-            if event.type == KEYDOWN:
-                keys = pygame.key.get_pressed()
-
-                mixer.keys_interaction(keys)
-
-                if keys[K_ESCAPE]:
-                    running = False
-
-            # If the user click somewhere.
-            if event.type == MOUSEBUTTONDOWN:
-                click = True
+        if running:
+            click, running, next_action = handle_keys_event(mixer, next_action)
 
         if mixer.notification.is_active:
             mixer.notification.render(screen)
@@ -278,3 +265,28 @@ def loop_menu(screen: pygame.Surface, banner: pygame.Surface, menu_type: str, mi
         pygame.display.update()
 
     return next_action
+
+
+def handle_keys_event(mixer, next_action=None):
+    # Reset the click variable to false for each frame.
+    running = True
+    click = False
+
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            exit_app()
+
+        if event.type == KEYDOWN:
+            keys = pygame.key.get_pressed()
+
+            mixer.keys_interaction(keys)
+
+            if keys[K_ESCAPE]:
+                running = False
+                next_action = 'back'
+
+        # If the user click somewhere.
+        if event.type == MOUSEBUTTONDOWN:
+            click = True
+
+    return click, running, next_action

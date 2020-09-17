@@ -20,7 +20,15 @@ class App:
     ICON = pygame.image.load(asset('tile-crusader-logo.png'))
 
     # Determines if the user click or not.
-    click = False
+    mouse = False
+
+    # The index of the object where the user is.
+    # If set to None, this mean's that the user is using
+    # his mouse to navigate throught the menus.
+    key_nav = None
+
+    # Determines if the user press an enter key or not.
+    enter_key = False
 
     # Scale must be dynamic if resizable is available.
     # A specific event handler will manage that.
@@ -67,15 +75,18 @@ class App:
             button.fill((255, 255, 255, 192), None, pygame.BLEND_RGBA_MULT)
 
         # Get the rect of each buttons
-        buttons_rect = {button: buttons.get(button).get_rect() for button in buttons}
+        btns_rect = {button: buttons.get(button).get_rect() for button in buttons}
 
         # Set the x, y coordinates of the buttons rect.
-        for i, rect in enumerate(list(buttons_rect.values())):
+        for i, rect in enumerate(list(btns_rect.values())):
             if i == 0:
                 rect.topleft = (40, get_screen_height() - 450)
             else:
-                precedent = list(buttons_rect.values())[i - 1]
+                precedent = list(btns_rect.values())[i - 1]
                 rect.topleft = (40, (precedent.y + precedent.height + 10))
+
+        # X and Y coordinates of the user mouse cursor at the precedent frame.
+        precedent_x, precedent_y = None, None
 
         # This is the main menu.
         while True:
@@ -83,17 +94,29 @@ class App:
             self.screen.blit(self.main_background, (0, 0))
 
             # Display buttons to the screen
-            for button, rect in zip(buttons.values(), buttons_rect.values()):
+            for button, rect in zip(buttons.values(), btns_rect.values()):
                 self.screen.blit(button, rect.topleft)
 
             # X and Y coordinates of the user mouse cursor.
             mouse_x, mouse_y = pygame.mouse.get_pos()
 
-            if buttons_rect.get('play').collidepoint((mouse_x, mouse_y)):
-                # Make the button more opaque when we're hovering it.
-                hovered(self.screen, buttons['play'], buttons_rect['play'])
+            # The button that the mouse is hovering.
+            # When the user switch to key navigation, we'll focus the button where the mouse is hovering.
+            mouse_hovering = None
 
-                if self.click:
+            # If the mouse perform an action (move or click) then leave the keyboard navigation
+            if self.mouse or mouse_x != precedent_x or mouse_y != precedent_y:
+                self.key_nav = None
+
+            # PLAY button
+            if self.key_nav == 0 or (btns_rect.get('play').collidepoint((mouse_x, mouse_y)) and self.key_nav is None):
+                if self.key_nav is None:
+                    mouse_hovering = 0
+
+                # Make the button more opaque when we're hovering it.
+                hovered(self.screen, buttons['play'], btns_rect['play'])
+
+                if self.mouse or (self.key_nav is not None and self.enter_key):
                     # Initialize the game.
                     if self.game is None:
                         self.game = Game(self.screen, self.mixer, self.notification, self.scale)
@@ -108,26 +131,65 @@ class App:
                     # Reset the standard caption.
                     pygame.display.set_caption(self.NAME)
 
-            if buttons_rect.get('help').collidepoint((mouse_x, mouse_y)):
-                hovered(self.screen, buttons['help'], buttons_rect['help'])
+            # HELP button
+            if self.key_nav == 1 or (btns_rect.get('help').collidepoint((mouse_x, mouse_y)) and self.key_nav is None):
+                if self.key_nav is None:
+                    mouse_hovering = 1
 
-                if self.click:
-                    help_menu(self.screen)
+                hovered(self.screen, buttons['help'], btns_rect['help'])
+
+                if self.mouse or self.enter_key:
+                    help_menu(self.screen, self.mixer)
                     pygame.display.set_caption(self.NAME)
 
-            if buttons_rect.get('quit').collidepoint((mouse_x, mouse_y)):
-                hovered(self.screen, buttons['quit'], buttons_rect['quit'])
+            # QUIT button
+            if self.key_nav == 2 or (btns_rect.get('quit').collidepoint((mouse_x, mouse_y)) and self.key_nav is None):
+                if self.key_nav is None:
+                    mouse_hovering = 2
 
-                if self.click:
+                hovered(self.screen, buttons['quit'], btns_rect['quit'])
+
+                if self.mouse or self.enter_key:
                     exit_app()
 
-            # Reset the click attribute to false for each frame.
-            self.click = False
+            # Reset the click and enter_key attributes to false for each frame.
+            self.mouse = False
+            self.enter_key = False
+
+            # Assign the current mouse position.
+            # These values will determines if the mouse cursor has moved or not.
+            precedent_x, precedent_y = mouse_x, mouse_y
 
             for event in pygame.event.get():
 
                 if event.type == KEYDOWN:
                     keys = pygame.key.get_pressed()
+
+                    if keys[K_DOWN]:
+                        # Start key navigation
+                        if self.key_nav is None:
+                            if mouse_hovering is None:
+                                self.key_nav = 0
+                            else:
+                                self.key_nav = mouse_hovering
+
+                        # Stay on key navigation...
+                        else:
+                            self.key_nav = 0 if self.key_nav == 2 else self.key_nav + 1
+
+                    if keys[K_UP]:
+                        if self.key_nav is None:
+                            if mouse_hovering is None:
+                                self.key_nav = 0
+                            else:
+                                self.key_nav = mouse_hovering
+
+                        else:
+                            self.key_nav = 2 if self.key_nav == 0 else self.key_nav - 1
+
+                    # If the user press the enter key
+                    if keys[K_RETURN] or keys[K_KP_ENTER]:
+                        self.enter_key = True
 
                     # Handle keys which interact with the audio
                     self.mixer.keys_interaction(keys)
@@ -137,7 +199,7 @@ class App:
 
                 # If the user click somewhere.
                 if event.type == MOUSEBUTTONDOWN:
-                    self.click = True
+                    self.mouse = True
 
             if self.notification.is_active:
                 self.notification.render(self.screen)
