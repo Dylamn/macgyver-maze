@@ -1,4 +1,4 @@
-from src.UI.menus import *
+from src.UI.menus import help_menu
 from src.UI.notification import Notification
 
 from pygame.locals import *
@@ -36,7 +36,7 @@ class App:
         self.scale = calculate_scale(size)
 
         self.screen_size = size
-        self.screen = pygame.display.set_mode(self.screen_size, 0, depth=32)
+        self.screen = pygame.display.set_mode(self.screen_size, depth=32)
 
         pygame.display.set_icon(self.ICON)
         pygame.display.set_caption(self.NAME)
@@ -51,11 +51,14 @@ class App:
         # Audio
         self.mixer = Mixer(self.notification)
 
+        # Init game as None
+        self.game = None
+
     def execute(self):
         # Load buttons images.
         buttons = {
             "play": pygame.image.load(asset('buttons/play.png')),
-            "options": pygame.image.load(asset('buttons/options.png')),
+            "help": pygame.image.load(asset('buttons/help.png')),
             "quit": pygame.image.load(asset('buttons/quit.png'))
         }
 
@@ -92,22 +95,24 @@ class App:
 
                 if self.click:
                     # Initialize the game.
-                    game = Game(self.screen, self.mixer, self.notification, self.scale)
+                    if self.game is None:
+                        self.game = Game(self.screen, self.mixer, self.notification, self.scale)
 
                     # Then execute the game loop.
-                    game.execute()
+                    remove_game = self.game.execute()
 
-                    # Remove resources.
-                    del game
+                    # remove_game determines if we cleanup the resources that the game instance use.
+                    if remove_game:
+                        self.game = None
 
                     # Reset the standard caption.
                     pygame.display.set_caption(self.NAME)
 
-            if buttons_rect.get('options').collidepoint((mouse_x, mouse_y)):
-                hovered(self.screen, buttons['options'], buttons_rect['options'])
+            if buttons_rect.get('help').collidepoint((mouse_x, mouse_y)):
+                hovered(self.screen, buttons['help'], buttons_rect['help'])
 
                 if self.click:
-                    options_menu(self.screen)
+                    help_menu(self.screen)
                     pygame.display.set_caption(self.NAME)
 
             if buttons_rect.get('quit').collidepoint((mouse_x, mouse_y)):

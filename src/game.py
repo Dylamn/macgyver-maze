@@ -1,7 +1,9 @@
 import sys
 
-from src.UI.menus import *
+from pygame.locals import *
 from src.utils import *
+
+from src.UI.menus import victory_screen, defeat_screen
 
 # Structures
 from src.maze.maze import Maze
@@ -85,9 +87,6 @@ class Game:
         # Place items...
         self.place_items()
 
-        # Switch the value for the game loop to True.
-        self.__running = True
-
     def on_event(self, event):
         """Handle pygame events."""
         if event.type == QUIT:
@@ -152,6 +151,14 @@ class Game:
     def execute(self):
         """Execute the game loop."""
 
+        # Set the value for the game loop to True.
+        self.__running = True
+
+        # Determines if the application delete the game instance or not.
+        # When user loose and go back to the main menu, we can remove
+        # the game resource.
+        delete_on_leaving = False
+
         while self.__running:
             pygame.event.pump()
             event = pygame.event.wait()
@@ -176,12 +183,14 @@ class Game:
                     if not self.macgyver.alive():  # MacGyver is dead, display the defeat screen.
                         next_action = defeat_screen(self.screen, self.mixer)
 
-                        self.handle_next_action(next_action)
+                        delete_on_leaving = self.handle_next_action(next_action)
 
             if self.macgyver.coordinates == self.finish_point:  # MacGyver win, display the victory screen.
                 next_action = victory_screen(self.screen, self.mixer)
 
-                self.handle_next_action(next_action)
+                delete_on_leaving = self.handle_next_action(next_action)
+
+        return delete_on_leaving
 
     def handle_next_action(self, next_action):
         """Handle the next action after a victory/defeat."""
@@ -193,6 +202,9 @@ class Game:
 
         elif next_action == 'back':
             self.__running = False
+            return True
+
+        return False
 
     def reset(self):
         """Reset the game."""
