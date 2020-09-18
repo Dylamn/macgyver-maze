@@ -1,5 +1,5 @@
 ###############
-# #   #   #   #
+# #   #   #  S#
 #    ## #   ###
 ####  # ### # #
 #  #     #    #
@@ -11,11 +11,11 @@
 # ####  # ### #
 # #    #  #   #
 #   # ##  # # #
-#  #  # S#    #
+#  #  #  #    #
 #######F#######
 
 ; Comments section (Those lines will be ignored in the parsing process.)
-; A few informations about each characters
+; A few information about each characters
 ;
 ; First, the characters "#", "S", "F" and "I" are reserved and required for the application to work.
 ; See what's they represents below:

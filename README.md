@@ -12,6 +12,12 @@ This application needs the `pygame` module installed. To do that, you must the m
 virtual environment. You can either use the integrated library [venv](https://docs.python.org/3.8/library/venv.html) 
 since python 3.3, [virtualenv](https://virtualenv.pypa.io/en/latest/) or any tool you want.
 
+For example with venv, you can create and activate with the following:
+```shell script
+$ python3 -m venv venv
+$ source venv/bin/activate
+```
+
 All dependencies of the projects are listed in the requirements.txt file at the root of the project. 
 After you have created your virtual environment and activate it, use the following command to install dependencies:
 
@@ -46,9 +52,8 @@ To move MacGyver, use the keyboard arrows:
 
 <kbd>←</kbd> <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd>
 
-or, if you prefer you can use the classic,
-<kbd>w</kbd> <kbd>a</kbd> <kbd>s</kbd> <kbd>d</kbd> for qwerty, 
-<kbd>z</kbd> <kbd>q</kbd> <kbd>s</kbd> <kbd>d</kbd> for azerty, keyboards.
+or, if you prefer you can use the classic 
+<kbd>z</kbd> <kbd>q</kbd> <kbd>s</kbd> <kbd>d</kbd> with an azerty keyboard layout.
 
 MacGyver will collect every object simply by walking on it. 
 The syringe can be crafted when MacGyver gather all necessary items.
@@ -59,3 +64,19 @@ Press <kbd>C</kbd> when the text is prompted
 
 
 Hope you'll like it !
+
+## Error with SDL
+
+At some times, you can get an error when installing `pygame` like this one:
+```
+Unable to run "sdl-config". Please make sure a development version of SDL is installed.
+```
+If you use python3.8, try to install `pygame` with another python version.
+If the problem is still there, try to install (globally) the following packages:
+```shell script
+sudo apt-get install python-dev libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libsdl1.2-dev libsmpeg-dev python-numpy subversion libportmidi-dev ffmpeg libswscale-dev libavformat-dev libavcodec-dev libfreetype6-dev
+```
+
+You can also check [this question](https://stackoverflow.com/questions/19579528/pygame-installation-sdl-config-command-not-found)
+asked on Stack Overflow.
+
