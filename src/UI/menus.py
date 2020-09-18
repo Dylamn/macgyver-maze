@@ -1,11 +1,14 @@
 import pygame.font
 
-from pygame.locals import MOUSEBUTTONDOWN, KEYDOWN, K_ESCAPE, QUIT, \
-    BLEND_RGBA_MULT
-
+# For type hinting
+from pygame import Surface
 from src.mixer import Mixer
-from src.utils import asset, hovered, exit_app, \
-    get_screen_size, get_screen_width, get_screen_height
+
+from pygame.locals import (MOUSEBUTTONDOWN, KEYDOWN,
+                           K_ESCAPE, QUIT, BLEND_RGBA_MULT)
+
+from src.utils import (asset, hovered, exit_app,
+                       get_screen_size, get_screen_width, get_screen_height)
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -85,7 +88,9 @@ def help_menu(screen: pygame.Surface, mixer: Mixer):
     # Arrow keys caption
     arrow_keys_caption = font.render("Move MacGyver", True, WHITE)
     arrow_keys_caption_rect = arrow_keys_caption.get_rect()
-    arrow_keys_caption_rect.topleft = (key_right_rect.right + MARGIN, offset_line1),
+    arrow_keys_caption_rect.topleft = (
+        key_right_rect.right + MARGIN, offset_line1
+    ),
 
     # Get the X axis of the first caption,
     # we'll align every captions based on this one.
@@ -190,7 +195,7 @@ def defeat_screen(screen: pygame.Surface, mixer: Mixer):
     return next_action
 
 
-def loop_menu(screen: pygame.Surface, banner: pygame.Surface, menu_type: str, mixer: Mixer):
+def loop_menu(screen: Surface, banner: Surface, menu_type: str, mixer: Mixer):
     """Handle events of the victory/defeat menus."""
     running = True
     next_action = None

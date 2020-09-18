@@ -3,7 +3,7 @@ from abc import ABCMeta, abstractmethod
 
 
 class ICollectableItem(metaclass=ABCMeta):
-    """This interface is used to define an item."""
+    """The interface which define a collectable item."""
 
     @classmethod
     def __subclasshook__(cls, subclass):
@@ -22,8 +22,8 @@ class ICollectableItem(metaclass=ABCMeta):
     @property
     @abstractmethod
     def item_file(self) -> str:
-        """The name of the file used for the visual representation of the item."""
-        raise NotImplementedError
+        """The file (name) used for the visual representation of the item."""
+        return self._image_file
 
     @abstractmethod
     def collect(self, inventory: sprite.Group) -> None:
@@ -32,7 +32,7 @@ class ICollectableItem(metaclass=ABCMeta):
 
 
 class ICraftableItem(metaclass=ABCMeta):
-    """This interface is used to define an item that can be crafted."""
+    """The interface which define a craftable item."""
 
     @classmethod
     def __subclasshook__(cls, subclass):
@@ -46,14 +46,6 @@ class ICraftableItem(metaclass=ABCMeta):
             or NotImplemented
         )
 
-    @property
-    @abstractmethod
-    def item_file(self) -> str:
-        """The name of the file used for
-        the visual representation of the item.
-        """
-        raise NotImplementedError
-
     # The name of the item.
     name = None
 
@@ -66,10 +58,16 @@ class ICraftableItem(metaclass=ABCMeta):
     # The list of items needed for the craft of this item.
     items_required = []
 
+    @property
+    @abstractmethod
+    def item_file(self) -> str:
+        """The file (name) used for the visual representation of the item."""
+        raise self._image_file
+
     @classmethod
     @abstractmethod
     def can_be_crafted(cls, inventory: sprite.Group) -> bool:
-        """Determine whether the item can be crafted or not with the givens in inventory."""
+        """Determine if the item can be crafted with the given inventory."""
         raise NotImplementedError
 
     @classmethod

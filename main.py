@@ -3,14 +3,11 @@ from os import path
 from src.utils import get_screen_size, write_default_config
 import pygame
 import shutil
+from src.app import App
 
 
 def main():
     """Bootstrap the game and the pygame module."""
-
-    # We import App inside the main method because class properties needs values from the config file.
-    # If the config file doesn't exist, the program will crash.
-    from src.app import App
 
     # Initialize pygame
     pygame.init()
@@ -34,6 +31,7 @@ def check_config_file():
 
 
 def create_config_file():
+    """Create the config file which will be used by the game."""
     try:
         shutil.copy(r'settings.ini.example', r'settings.ini')
     except FileNotFoundError:

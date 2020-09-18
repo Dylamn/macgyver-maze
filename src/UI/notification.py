@@ -54,7 +54,7 @@ class Notification:
 
     @property
     def is_active(self) -> bool:
-        """Get the boolean which determines if a notification is active or not."""
+        """Determines if a notification is active or not."""
         return self.__is_active
 
     @is_active.setter
@@ -76,7 +76,7 @@ class Notification:
         self.end = None
 
     def render(self, screen):
-        """Display the text notification if the notification display is active."""
+        """Display the text notification if notification is active."""
 
         if self.end is not None:
             # Current time. We'll use this value
@@ -102,7 +102,10 @@ class Notification:
             self.rect_line1 = self.line1.get_rect()
 
             # Calculate position of the first text line.
-            margin_top = (screen_height - (self.rect_line1.height * 2 + self.SPACING_H)) / 2
+            margin_top = (
+                    (screen_height -
+                     (self.rect_line1.height * 2 + self.SPACING_H)) / 2)
+
             offset_x_line1 = (screen_width - self.rect_line1.width) / 2
             offset_y_line1 = margin_top
 
@@ -114,7 +117,9 @@ class Notification:
 
             # Add a bit of margin
             background_width += self.MARGIN_BACKGROUND_TEXT
-            background_height = self.rect_line1.height + self.MARGIN_BACKGROUND_TEXT
+            background_height = (
+                    self.rect_line1.height + self.MARGIN_BACKGROUND_TEXT
+            )
 
             # The notification has a second line.
             if len(self.sentences.get(self.__selected_sentence)) == 2:
@@ -127,7 +132,9 @@ class Notification:
 
                 # Calculate the position of the
                 # second text line with the first one.
-                offset_y_line2 = screen_height - margin_top - self.rect_line2.height
+                offset_y_line2 = (
+                        screen_height - margin_top - self.rect_line2.height
+                )
 
                 # The background width must have the width of the longest line.
                 background_width = max(
@@ -148,7 +155,9 @@ class Notification:
             # Finally, draw text on the screen at the calculated coordinates.
             screen.blits([
                 # Background
-                (background, (background_x, offset_y_line1 - self.MARGIN_BACKGROUND_TEXT / 2)),
+                (background, (
+                    background_x, offset_y_line1 -
+                    self.MARGIN_BACKGROUND_TEXT / 2)),
 
                 # Line 1
                 (self.line1, (offset_x_line1, offset_y_line1))

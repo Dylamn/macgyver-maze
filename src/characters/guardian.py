@@ -1,9 +1,11 @@
 import pygame.sprite as sprite
-import pygame.rect as pyrect
 import pygame.image
+
+from pygame.rect import Rect
 from operator import sub
 from src.utils import asset
 from src.characters.macgyver import Macgyver
+
 
 from src.items.syringe import Syringe
 
@@ -45,21 +47,37 @@ class Guardian(sprite.Sprite):
 
     @property
     def coordinates(self):
-        """Get MacGyver's coordinates."""
+        """Get Guardian's coordinates."""
         return self.rect.topleft
 
     @coordinates.setter
     def coordinates(self, value):
+        """Set new coordinates for the Guardian."""
         self.rect.topleft = value
 
     def find_adjacent_tiles(self, scale):
+        """Retrieve all adjacent tiles."""
+
         width, height = scale
 
-        # Retrieve all adjacent tiles.
-        adjacent_top = pyrect.Rect(tuple(map(sub, self.coordinates, (0, -height))), (width, height))
-        adjacent_down = pyrect.Rect(tuple(map(sub, self.coordinates, (0, height))), (width, height))
-        adjacent_left = pyrect.Rect(tuple(map(sub, self.coordinates, (-width, 0))), (width, height))
-        adjacent_right = pyrect.Rect(tuple(map(sub, self.coordinates, (width, 0))), (width, height))
+        adjacent_top = Rect(
+            # Left and Top values
+            tuple(map(sub, self.coordinates, (0, -height))),
+            # Width and Height values
+            tuple([width, height])
+        )
+        adjacent_down = Rect(
+            tuple(map(sub, self.coordinates, (0, height))),
+            tuple([width, height])
+        )
+        adjacent_left = Rect(
+            tuple(map(sub, self.coordinates, (-width, 0))),
+            tuple([width, height])
+        )
+        adjacent_right = Rect(
+            tuple(map(sub, self.coordinates, (width, 0))),
+            tuple([width, height])
+        )
 
         return [adjacent_top, adjacent_right, adjacent_down, adjacent_left]
 

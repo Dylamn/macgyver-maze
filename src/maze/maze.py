@@ -22,7 +22,7 @@ class Maze:
         self.parse_maze_pattern()  # Populate the maze grid property.
 
         # Contains every coordinates where a item can be placed.
-        # key/value dictionary. The key are coordinates and values are " " spaces character.
+        # The key are coordinates and values are " " spaces character.
         self.empty_tiles = {}
 
         # Starting and ending point coordinates.
@@ -34,7 +34,8 @@ class Maze:
     def _init(self):
         """Setup the maze grid."""
 
-        # Initialize vars which will contains the coordinates of  the guardian and macgyver
+        # Initialize vars which will contains
+        # the coordinates of the guardian and macgyver
         mac_gyver_pos = None
         guardian_pos = None
 
@@ -60,7 +61,8 @@ class Maze:
                         # The tile where the guardian will stand
                         guardian_pos = (x, y)
 
-        # At the end, we remove the tiles adjacent to macgyver and the guardian from the list of empty tiles.
+        # At the end, we remove the tiles adjacent to macgyver
+        # and the guardian from the list of empty tiles.
         self._remove_adjacent_coordinates(mac_gyver_pos)
         self._remove_adjacent_coordinates(guardian_pos)
 
@@ -69,12 +71,16 @@ class Maze:
         for y, columns in enumerate(self.grid):
             for x, tile in enumerate(columns):
 
-                # Turn both strings into lowercase because "S" or "F" can be lowercase in the pattern file.
+                # Turn "tile" string into lowercase for safe comparison.
+                # Tile characters can be upper/lower case in the pattern file.
                 if tile.lower() == wanted:
                     return x, y
 
     def random_coordinates(self):
-        """Generate random coordinates. The result is an unoccupied ground (not a S, F, I, or #)."""
+        """Generate random coordinates.
+
+        The result is an unoccupied ground (not a S, F, I, or #).
+        """
         coords = random.choice(list(self.empty_tiles))
 
         # Remove the selected tile.
@@ -90,7 +96,10 @@ class Maze:
         return coords
 
     def _remove_adjacent_coordinates(self, point: tuple):
-        """Remove adjacent empty tiles (omit the possibility to place an item next to another)"""
+        """Remove adjacent empty tiles.
+
+         Omit the possibility to place an item next to another
+         """
         for i in [-1, 1]:
             col, row = point
             adjacent_x = (col + i, row)

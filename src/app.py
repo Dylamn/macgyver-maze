@@ -21,6 +21,12 @@ class App:
     # The name of the application.
     NAME = "MacGyver Maze"
 
+    # The slug name of the application
+    SLUG_NAME = "macgyver-maze"
+
+    # The version of the application.
+    VERSION = '1.0.2'
+
     # The icon of the application.
     ICON = pygame.image.load(asset('tile-crusader-logo.png'))
 
@@ -123,7 +129,10 @@ class App:
                 self.key_nav = None
 
             # PLAY button
-            if (btns_rect.get('play').collidepoint((mouse_x, mouse_y)) and self.key_nav is None) or self.key_nav == 0:
+            if (self.key_nav == 0
+                    or (btns_rect.get('play').collidepoint((mouse_x, mouse_y))
+                        and self.key_nav is None)):
+
                 if self.key_nav is None:
                     mouse_hovering = 0
 
@@ -150,7 +159,10 @@ class App:
                     pygame.display.set_caption(self.NAME)
 
             # HELP button
-            if self.key_nav == 1 or (btns_rect.get('help').collidepoint((mouse_x, mouse_y)) and self.key_nav is None):
+            if (self.key_nav == 1
+                    or (btns_rect.get('help').collidepoint((mouse_x, mouse_y))
+                        and self.key_nav is None)):
+
                 if self.key_nav is None:
                     mouse_hovering = 1
 
@@ -161,7 +173,10 @@ class App:
                     pygame.display.set_caption(self.NAME)
 
             # QUIT button
-            if self.key_nav == 2 or (btns_rect.get('quit').collidepoint((mouse_x, mouse_y)) and self.key_nav is None):
+            if (self.key_nav == 2
+                    or (btns_rect.get('quit').collidepoint((mouse_x, mouse_y))
+                        and self.key_nav is None)):
+
                 if self.key_nav is None:
                     mouse_hovering = 2
 
@@ -193,8 +208,8 @@ class App:
 
                         # Stay on key navigation...
                         else:
-                            self.key_nav = 0 \
-                                if self.key_nav == 2 else self.key_nav + 1
+                            self.key_nav = (0 if self.key_nav == 2
+                                            else self.key_nav + 1)
 
                     if keys[K_UP]:
                         if self.key_nav is None:
@@ -204,8 +219,8 @@ class App:
                                 self.key_nav = mouse_hovering
 
                         else:
-                            self.key_nav = 2 \
-                                if self.key_nav == 0 else self.key_nav - 1
+                            self.key_nav = (2 if self.key_nav == 0
+                                            else self.key_nav - 1)
 
                     # If the user press the enter key
                     if keys[K_RETURN] or keys[K_KP_ENTER]:

@@ -90,7 +90,8 @@ class Macgyver(sprite.Sprite):
     def handle_keys(self, keys, key_unicode=None):
         """Handle keys which interacts with MacGyver."""
 
-        # The game handle movements with standard directional keys (w, a, s, d for qwerty and z, q, s, d for azerty)
+        # The game handle movements with arrow keys or "classic" game
+        # directional keys (w, a, s, d for qwerty and z, q, s, d for azerty,)
         if keys[K_UP] or key_unicode in ['w', 'z']:
             self.move_up()
 

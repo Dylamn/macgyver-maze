@@ -2,6 +2,9 @@ from os import getcwd, path
 import configparser
 from pathlib import Path
 
+from pygame import quit as pygame_quit
+from sys import exit as sys_exit
+
 # Import for type hinting
 from pygame import Surface, Rect
 
@@ -69,11 +72,10 @@ def write_default_config():
         config.write(configfile, space_around_delimiters=False)
 
 
-def write_config(config=None, section=None, key=None, value=None, file_path=r'settings.ini'):
+def write_config(section=None, key=None, value=None, file_path='settings.ini'):
     """Write options in the config file."""
 
-    if config is None:
-        config = get_config()
+    config = get_config()
 
     with open(file_path, 'w') as configfile:
         if not config.has_section(section):
@@ -110,7 +112,9 @@ def asset(relpath=""):
     """Generate an asset path."""
     asset_path = base_path(f'assets/{relpath}')
 
-    assert path.isfile(asset_path), f"The path doesn't indicate a file. Given: {asset_path}"
+    assert path.isfile(asset_path), \
+        f"The path doesn't indicate a file. Given: {asset_path}"
+
     assert path.exists(asset_path), "Given file doesn't exists."
 
     return str(asset_path)
@@ -128,7 +132,10 @@ def base_path(relpath=""):
 
 def get_screen_size():
     """Retrieve the last registered screen size in the settings file."""
-    size = [int(values) for values in settings('Interface', option='size').split('x')]
+    size = [
+        int(values)
+        for values in settings('Interface', option='size').split('x')
+    ]
 
     return tuple(size)
 
@@ -168,11 +175,8 @@ def is_float(value):
 
 def exit_app():
     """Clean up resources and exit the application."""
-    import pygame
-    import sys
-
-    pygame.quit()
-    sys.exit()
+    pygame_quit()
+    sys_exit()
 
 
 def hovered(screen: Surface, image: Surface, rect: Rect):

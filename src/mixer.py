@@ -18,8 +18,10 @@ class Mixer:
     # Volume of the musics.
     _musicVolume = settings('Audio', 'music_volume')
 
+    # TODO:
+    #  replace by # settings('Audio', 'sound_volume') when sound is handled.
     # Volume of the sounds.
-    _soundVolume = settings('Audio', 'music_volume')  # settings('Audio', 'sound_volume')
+    _soundVolume = settings('Audio', 'music_volume')
 
     # Dict which contains every musics path of the game.
     musics = {
@@ -41,7 +43,7 @@ class Mixer:
 
     @is_muted.setter
     def is_muted(self, value: int):
-        """Set a new state for the mute status and write it inside the config file."""
+        """Set a new state for the mute status and save it to the config."""
         self.__is_muted = bool(value)
         write_config(section=self.SECTION, key='muted', value=value)
 
@@ -62,7 +64,7 @@ class Mixer:
         else:
             self._musicVolume = 0.00
 
-        write_config(section=self.SECTION, key='music_volume', value=self._musicVolume)
+        write_config(self.SECTION, key='music_volume', value=self._musicVolume)
 
         pygame.mixer.music.set_volume(self.music_volume)
 
@@ -76,21 +78,29 @@ class Mixer:
         """Set a new volume for sounds."""
         if self.__is_audio_value(self._musicVolume + value):
             self._soundVolume += value
-            write_config(section=self.SECTION, key='sound_volume', value=self._soundVolume)
+            write_config(self.SECTION, 'sound_volume', self._soundVolume)
 
     def __init__(self, notification: Notification = None):
         """Initialize the game mixer."""
 
         pygame.mixer.pre_init(
-            44100,  # Audio frequency.
-            -1,  # Size.
-            2,  # Channels. 1 means mono, 2 stereo.
-            512  # Buffer. A low buffer makes sounds play (essentially) immediatly.
+            # The audio frequency.
+            frequency=44100,
+
+            # How many bits used for audio samples.
+            # negative value means that the signed sample values will be used.
+            size=-1,
+
+            # 1 for mono, 2 for stereo.
+            channels=2,
+
+            # A low buffer makes sounds play (essentially) immediatly.
+            buffer=512
         )
 
         # Initialize sounds after the pre initialization of the mixer.
-        for sound_name in self.sounds.keys():
-            self.sounds[sound_name] = pygame.mixer.Sound(self.sounds[sound_name])
+        for path in self.sounds.keys():
+            self.sounds[path] = pygame.mixer.Sound(self.sounds[path])
 
         self.notification = notification
 
@@ -100,7 +110,11 @@ class Mixer:
     def set_music(self, music_slug, loops=-1):
         """Set a music to play."""
         # Fallback with the main theme.
-        pygame.mixer.music.load(self.musics.get(music_slug, asset('sounds/macgyver_theme_song.ogg')))
+        pygame.mixer.music.load(
+            self.musics.get(
+                music_slug, asset('sounds/macgyver_theme_song.ogg')
+            )
+        )
         pygame.mixer.music.set_volume(self._musicVolume)
 
         if self.is_muted:
@@ -109,7 +123,7 @@ class Mixer:
             pygame.mixer.music.play(loops)
 
     def play_sound(self, sound_slug):
-        """Play a sound. If the given sound doesn't exist, fallback with a dummy sound."""
+        """Play a sound. Fallback with a dummy sound if given doesn't exist."""
         if self.is_muted:
             return
 
@@ -131,7 +145,11 @@ class Mixer:
         """Handle keys which interact with the audio"""
         if keys[K_F1]:
             self.toggle()
-            self.notification.active('volume', 'muted' if self.__is_muted else 'unmuted').set_timer(1)
+
+            # String representation of mute status
+            mute_status = 'muted' if self.is_muted else 'unmuted'
+
+            self.notification.active('volume', mute_status).set_timer(1)
 
         if keys[K_KP_PLUS] or keys[K_KP_MINUS]:
             step = 0.1 if keys[K_KP_PLUS] else -0.1
@@ -139,7 +157,10 @@ class Mixer:
             # Decrement/increment the volume by 0.1 (10%)
             self.music_volume = step
 
-            self.notification.active('volume', int(self.music_volume * 100)).set_timer(1)
+            # A volume "human readable" representation as %
+            percent = int(self.music_volume * 100)
+
+            self.notification.active('volume', percent).set_timer(1)
 
     def __mute(self):
         """Mute audio."""
@@ -153,7 +174,8 @@ class Mixer:
 
     @staticmethod
     def __is_audio_value(value):
-        """Verify if the given value is a correct value for an audio level. \n
-            A valid value is greater or equal than 0 and less or equal than 1.
+        """Verify if the given value is a correct value for an audio level.
+
+        A valid value is greater or equal than 0 and less or equal than 1.
         """
         return 1 >= value >= 0
