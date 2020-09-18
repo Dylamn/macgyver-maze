@@ -65,6 +65,15 @@ Press <kbd>C</kbd> when the text is prompted
 
 Hope you'll like it !
 
+## Compilation
+
+A setup.py file is present at the root of the project which is correctly configured for compilation 
+**using [cx_freeze](https://cx-freeze.readthedocs.io/en/latest/overview.html)**.
+To start a compilation with, use :
+````shell script
+$ python setup.py build
+````
+
 ## Error with SDL
 
 At some times, you can get an error when installing `pygame` like this one:
@@ -78,5 +87,6 @@ sudo apt-get install python-dev libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-t
 ```
 
 You can also check [this question](https://stackoverflow.com/questions/19579528/pygame-installation-sdl-config-command-not-found)
-asked on Stack Overflow.
+asked on Stack Overflow which can help you a lot.
+
 
