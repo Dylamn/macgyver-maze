@@ -1,3 +1,5 @@
+import pygame
+
 from src.UI.menus import help_menu
 from src.UI.notification import Notification
 

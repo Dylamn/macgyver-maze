@@ -1,4 +1,4 @@
-import os
+from os import path
 
 from src.utils import *
 import pygame

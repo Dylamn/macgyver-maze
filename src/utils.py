@@ -1,8 +1,9 @@
-from os import path
+from os import getcwd, path
 import configparser
 from pathlib import Path
 
-import pygame
+# Import for type hinting
+from pygame import Surface, Rect
 
 
 def get_config():
@@ -120,11 +121,7 @@ def base_path(relpath=""):
 
     :param relpath relative path to a file, dir...
     """
-    project_path = Path(path.realpath(''))
-
-    # Jump to the parent directory as long as it's not the project directory (macgyver-maze).
-    while not project_path.name.endswith('macgyver-maze'):
-        project_path = project_path.parent
+    project_path = Path(getcwd())
 
     return project_path.joinpath(relpath)
 
@@ -159,6 +156,9 @@ def calculate_scale(screen_size: tuple):
 def is_float(value):
     """Verify if the given value is a float/number"""
     try:
+        if value is None:
+            return False
+
         float(value)
         return True
 
@@ -175,6 +175,6 @@ def exit_app():
     sys.exit()
 
 
-def hovered(screen: pygame.Surface, image: pygame.Surface, rect: pygame.Rect):
+def hovered(screen: Surface, image: Surface, rect: Rect):
     # Make the button more opaque when we're hovering it.
     screen.blit(image.copy(), rect.topleft)

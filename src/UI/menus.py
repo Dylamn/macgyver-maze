@@ -1,3 +1,5 @@
+import pygame.font
+
 from pygame.locals import *
 
 from src.mixer import Mixer

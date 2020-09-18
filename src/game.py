@@ -1,4 +1,5 @@
 import sys
+import pygame
 
 from pygame.locals import *
 from src.utils import *
