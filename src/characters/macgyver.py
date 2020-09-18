@@ -87,20 +87,23 @@ class Macgyver(sprite.Sprite):
         self._old_coordinates = self.rect.topleft
         self.rect = self.rect.move(self.LEFT)
 
-    def handle_keys(self, keys):
+    def handle_keys(self, keys, keymap=None):
         """Handle keys which interacts with MacGyver."""
 
+        if keymap is None:
+            keymap = {}
+
         # The game handle movements with standard directional keys (w, a, s, d for qwerty and z, q, s, d for azerty)
-        if keys[K_UP] or keys[K_w]:
+        if keys[K_UP] or keymap.get(25) in ['w', 'z']:
             self.move_up()
 
-        elif keys[K_RIGHT] or keys[K_d]:
+        elif keys[K_RIGHT] or keymap.get(40) == 'd':
             self.move_right()
 
-        elif keys[K_DOWN] or keys[K_s]:
+        elif keys[K_DOWN] or keymap.get(39) == 's':
             self.move_down()
 
-        elif keys[K_LEFT] or keys[K_a]:
+        elif keys[K_LEFT] or keymap.get(38) in ['a', 'q']:
             self.move_left()
 
     def _set_scale_moves(self, scale: tuple):
