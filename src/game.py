@@ -96,7 +96,7 @@ class Game:
             sys.exit()
 
         if event.type == KEYDOWN:
-            key_unicode = event.unicode
+            keymap = {event.scancode: event.unicode}
 
             keys = pygame.key.get_pressed()
 
@@ -119,7 +119,7 @@ class Game:
                 if self.notification.is_active:
                     self.notification.erase()
 
-            self.macgyver.handle_keys(keys, unicode=key_unicode)
+            self.macgyver.handle_keys(keys, keymap)
 
     def on_loop(self):
         """Perform checks, such as checking for colliding sprites."""
