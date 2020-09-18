@@ -3,7 +3,7 @@ import pygame.mixer
 from pygame.locals import K_F1, K_KP_PLUS, K_KP_MINUS
 
 from src.UI.notification import Notification
-from src.utils import *
+from src.utils import settings, asset, write_config
 
 
 class Mixer:
@@ -133,7 +133,6 @@ class Mixer:
             self.toggle()
             self.notification.active('volume', 'muted' if self.__is_muted else 'unmuted').set_timer(1)
 
-        # TODO: Refactor this condition as an if/elif ?
         if keys[K_KP_PLUS] or keys[K_KP_MINUS]:
             step = 0.1 if keys[K_KP_PLUS] else -0.1
 

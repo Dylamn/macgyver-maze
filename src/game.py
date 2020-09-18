@@ -1,8 +1,9 @@
 import sys
 import pygame
 
-from pygame.locals import *
-from src.utils import *
+from pygame import sprite
+from pygame.locals import KEYDOWN, K_ESCAPE, K_c, K_e, QUIT
+from src.utils import scale_position, exit_app
 
 from src.UI.menus import victory_screen, defeat_screen
 
@@ -43,7 +44,7 @@ class Game:
     # Determine whether the game is running or not.
     __running = False
 
-    def __init__(self, screen: pygame.Surface, mixer, notification, scale: tuple = (48, 48)):
+    def __init__(self, screen, mixer, notification, scale: tuple = (48, 48)):
         """Initialize the game."""
 
         screen.fill(BLACK)
@@ -130,11 +131,11 @@ class Game:
                 self.notification.active('craft-available').set_timer(2)
 
         # Check if MacGyver threw himself against a wall...
-        if pygame.sprite.spritecollide(self.macgyver, self.walls, False):
+        if sprite.spritecollide(self.macgyver, self.walls, False):
             self.macgyver.rollback()
 
         # Macgyver will collect the item and add it to it's inventory...
-        for item in pygame.sprite.spritecollide(self.macgyver, self.items, False):
+        for item in sprite.spritecollide(self.macgyver, self.items, False):
             item.collect(self.macgyver.inventory)
 
         # if self.macgyver.coordinates == self.finish_point:
@@ -182,15 +183,19 @@ class Game:
                 if self.macgyver.rect in self.guardian.adjacent_tiles:
                     self.mixer.play_sound('wilhelm_scream')
 
-                    # Calculates whether MacGyver will die or put the guardian to sleep.
+                    # Calculates whether MacGyver
+                    # will die or put the guardian to sleep.
                     self.__running = self.guardian.is_beatable(self.macgyver)
 
-                    if not self.macgyver.alive():  # MacGyver is dead, display the defeat screen.
+                    if not self.macgyver.alive():
+                        # MacGyver is dead, display the defeat screen.
                         next_action = defeat_screen(self.screen, self.mixer)
 
-                        delete_on_leaving = self.handle_next_action(next_action)
+                        delete_on_leaving = \
+                            self.handle_next_action(next_action)
 
-            if self.macgyver.coordinates == self.finish_point:  # MacGyver win, display the victory screen.
+            if self.macgyver.coordinates == self.finish_point:
+                # MacGyver win, display the victory screen.
                 next_action = victory_screen(self.screen, self.mixer)
 
                 delete_on_leaving = self.handle_next_action(next_action)

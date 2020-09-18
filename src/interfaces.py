@@ -7,9 +7,11 @@ class ICollectableItem(metaclass=ABCMeta):
 
     @classmethod
     def __subclasshook__(cls, subclass):
-        return (hasattr(subclass, 'collect') and
-                callable(subclass.collect) or
-                NotImplemented)
+        return (
+            hasattr(subclass, 'collect')
+            and callable(subclass.collect)
+            or NotImplemented
+        )
 
     # The name of the item.
     name = None
@@ -34,19 +36,22 @@ class ICraftableItem(metaclass=ABCMeta):
 
     @classmethod
     def __subclasshook__(cls, subclass):
-        return (hasattr(subclass, 'items_required') and
-                hasattr(subclass, 'can_be_crafted') and
-                callable(subclass.can_be_crafted) and
-                hasattr(subclass, 'craft') and
-                callable(subclass.craft) and
-                hasattr(subclass, 'missing_items') and
-                callable(subclass.missing_items) or
-                NotImplemented)
+        return (
+            hasattr(subclass, 'items_required')
+            and hasattr(subclass, 'can_be_crafted')
+            and callable(subclass.can_be_crafted)
+            and hasattr(subclass, 'craft') and callable(subclass.craft)
+            and hasattr(subclass, 'missing_items')
+            and callable(subclass.missing_items)
+            or NotImplemented
+        )
 
     @property
     @abstractmethod
     def item_file(self) -> str:
-        """The name of the file used for the visual representation of the item."""
+        """The name of the file used for
+        the visual representation of the item.
+        """
         raise NotImplementedError
 
     # The name of the item.
@@ -64,13 +69,13 @@ class ICraftableItem(metaclass=ABCMeta):
     @classmethod
     @abstractmethod
     def can_be_crafted(cls, inventory: sprite.Group) -> bool:
-        """Determine whether the item can be crafted or not with the items in inventory."""
+        """Determine whether the item can be crafted or not with the givens in inventory."""
         raise NotImplementedError
 
     @classmethod
     @abstractmethod
     def craft(cls, inventory: sprite.Group) -> bool:
-        """Craft the item and consume the items in inventory needed for the craft."""
+        """Craft the item and destroy required items for craft."""
         raise NotImplementedError
 
     @classmethod

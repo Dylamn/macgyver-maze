@@ -48,4 +48,3 @@ class CollectableItem(sprite.Sprite, ICollectableItem):
         self.kill()
         # Add the item in the macgyver inventory.
         inventory.add(self)
-

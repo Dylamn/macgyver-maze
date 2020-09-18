@@ -1,9 +1,11 @@
 import pygame.font
 
-from pygame.locals import *
+from pygame.locals import MOUSEBUTTONDOWN, KEYDOWN, K_ESCAPE, QUIT, \
+    BLEND_RGBA_MULT
 
 from src.mixer import Mixer
-from src.utils import *
+from src.utils import asset, hovered, exit_app, \
+    get_screen_size, get_screen_width, get_screen_height
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -25,7 +27,7 @@ def help_menu(screen: pygame.Surface, mixer: Mixer):
     font = pygame.font.SysFont(None, 50)
 
     back_button = pygame.image.load(asset('buttons/back.png'))
-    # back_button.fill((255, 255, 255, 192), None, BLEND_RGBA_MULT)
+    back_button.fill((255, 255, 255, 192), None, BLEND_RGBA_MULT)
     back_button_rect = back_button.get_rect()
     back_button_rect.topleft = (
         get_screen_width() / 2 - (back_button_rect.width / 2),
@@ -39,7 +41,8 @@ def help_menu(screen: pygame.Surface, mixer: Mixer):
     offset_line4 = offset_line3 + LINE_SPACING
 
     # Initialize each key image and associate coordinates for each image.
-    # Line 1 - Start with arrow keys. These will be displayed with the same layout as on a conventional keyboard.
+    # Line 1 - Start with arrow keys.
+    # These will be displayed with the same layout as on a standard keyboard.
     key_left = pygame.image.load(asset('keys/key_left.png'))
     key_left_rect = key_left.get_rect()
     key_left_rect.topleft = (MARGIN, offset_line1)
@@ -50,7 +53,10 @@ def help_menu(screen: pygame.Surface, mixer: Mixer):
 
     key_up = pygame.image.load(asset('keys/key_up.png'))
     key_up_rect = key_up.get_rect()
-    key_up_rect.topleft = (key_down_rect.left, (offset_line1 - key_down_rect.height))
+    key_up_rect.topleft = (
+        key_down_rect.left,
+        (offset_line1 - key_down_rect.height)
+    )
 
     key_right = pygame.image.load(asset('keys/key_right.png'))
     key_right_rect = key_right.get_rect()
@@ -81,7 +87,8 @@ def help_menu(screen: pygame.Surface, mixer: Mixer):
     arrow_keys_caption_rect = arrow_keys_caption.get_rect()
     arrow_keys_caption_rect.topleft = (key_right_rect.right + MARGIN, offset_line1),
 
-    # Get the X axis of the first caption, we'll align every captions based on this one.
+    # Get the X axis of the first caption,
+    # we'll align every captions based on this one.
     offset_caption_x = arrow_keys_caption_rect.left
 
     # C key caption
@@ -99,7 +106,8 @@ def help_menu(screen: pygame.Surface, mixer: Mixer):
     volume_key_caption_rect = volume_key_caption.get_rect()
     volume_key_caption_rect.topleft = (offset_caption_x, offset_line4)
 
-    # Initialize click variable which will determines if the user click or not.
+    # Initialize click variable which
+    # will determines if the user click or not.
     click = False
 
     while running:
@@ -109,16 +117,20 @@ def help_menu(screen: pygame.Surface, mixer: Mixer):
             (back_button, back_button_rect.topleft),
 
             # Arrow key images
-            (key_left, key_left_rect.topleft), (key_down, key_down_rect.topleft),
-            (key_up, key_up_rect.topleft), (key_right, key_right_rect.topleft),
+            (key_up, key_up_rect.topleft),
+            (key_left, key_left_rect.topleft),
+            (key_down, key_down_rect.topleft),
+            (key_right, key_right_rect.topleft),
 
             # other keys (C, F1, etc...)
             (key_c, key_c_rect.topleft), (key_f1, key_f1_rect.topleft),
             (key_minus, key_minus_rect), (key_plus, key_plus_rect),
 
             # captions
-            (arrow_keys_caption, arrow_keys_caption_rect.topleft), (key_c_caption, key_c_caption_rect.topleft),
-            (f1_key_caption, f1_key_caption_rect), (volume_key_caption, volume_key_caption_rect),
+            (arrow_keys_caption, arrow_keys_caption_rect.topleft),
+            (key_c_caption, key_c_caption_rect.topleft),
+            (f1_key_caption, f1_key_caption_rect),
+            (volume_key_caption, volume_key_caption_rect),
         ])
 
         # X and Y coordinates of the user mouse cursor.
@@ -146,7 +158,10 @@ def victory_screen(screen: pygame.Surface, mixer: Mixer):
 
     mixer.set_music('victory')
 
-    banner = pygame.transform.scale(pygame.image.load(asset('victory_banner.png')), get_screen_size())
+    banner = pygame.transform.scale(
+        pygame.image.load(asset('victory_banner.png')),
+        get_screen_size()
+    )
 
     next_action = loop_menu(screen, banner, 'victory', mixer)
 
@@ -162,7 +177,10 @@ def defeat_screen(screen: pygame.Surface, mixer: Mixer):
 
     mixer.set_music('defeat')
 
-    banner = pygame.transform.scale(pygame.image.load(asset('defeat_banner.png')), get_screen_size())
+    banner = pygame.transform.scale(
+        pygame.image.load(asset('defeat_banner.png')),
+        get_screen_size()
+    )
 
     next_action = loop_menu(screen, banner, 'defeat', mixer)
 

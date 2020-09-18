@@ -1,6 +1,6 @@
 from os import path
 
-from src.utils import *
+from src.utils import get_screen_size, write_default_config
 import pygame
 import shutil
 
