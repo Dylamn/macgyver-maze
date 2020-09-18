@@ -79,10 +79,12 @@ class Notification:
         """Display the text notification if the notification display is active."""
 
         if self.end is not None:
-            # Current time. We'll use this value to check if the notification is expired.
+            # Current time. We'll use this value
+            # to check if the notification is expired.
             self.running_time = time.time()
 
-            if self.running_time >= self.end:  # Notification is expired, we'll erase it.
+            if self.running_time >= self.end:
+                # Notification is expired, we'll erase it.
                 self.erase()
 
         if (self.end is not None and self.is_active) or self.is_active:
@@ -116,14 +118,23 @@ class Notification:
 
             # The notification has a second line.
             if len(self.sentences.get(self.__selected_sentence)) == 2:
-                self.line2 = self.font.render(self.sentences.get(self.__selected_sentence)[1], True, WHITE)
+                self.line2 = self.font.render(
+                    self.sentences.get(self.__selected_sentence)[1],
+                    True, WHITE
+                )
                 self.rect_line2 = self.line2.get_rect()
                 offset_x_line2 = (screen_width - self.rect_line2.width) / 2
-                # Calculate the position of the second text line with the first one.
+
+                # Calculate the position of the
+                # second text line with the first one.
                 offset_y_line2 = screen_height - margin_top - self.rect_line2.height
 
                 # The background width must have the width of the longest line.
-                background_width = max(self.line1.get_width(), self.line2.get_width())
+                background_width = max(
+                    self.line1.get_width(),
+                    self.line2.get_width()
+                )
+
                 # Add the height of the line2 to the background height.
                 background_height += self.rect_line2.height
 
@@ -135,10 +146,16 @@ class Notification:
             background.fill((0, 0, 0))
 
             # Finally, draw text on the screen at the calculated coordinates.
-            screen.blit(background, (background_x, offset_y_line1 - (self.MARGIN_BACKGROUND_TEXT / 2)))
-            screen.blit(self.line1, (offset_x_line1, offset_y_line1))
+            screen.blits([
+                # Background
+                (background, (background_x, offset_y_line1 - self.MARGIN_BACKGROUND_TEXT / 2)),
+
+                # Line 1
+                (self.line1, (offset_x_line1, offset_y_line1))
+            ])
 
             if self.line2 is not None:
+                # Line 2
                 screen.blit(self.line2, (offset_x_line2, offset_y_line2))
 
     def active(self, slug_sentence: str, dynamic_part=None):
@@ -180,4 +197,3 @@ class Notification:
 
         self.__selected_sentence = ""
         self.__dynamic_part = ""
-

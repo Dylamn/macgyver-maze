@@ -3,11 +3,14 @@ import pygame
 from src.UI.menus import help_menu
 from src.UI.notification import Notification
 
-from pygame.locals import *
+from pygame.locals import MOUSEBUTTONDOWN, \
+    KEYDOWN, K_DOWN, K_UP, K_RETURN, K_KP_ENTER, QUIT
 
 from src.game import Game
 from src.mixer import Mixer
-from src.utils import *
+
+from src.utils import asset, calculate_scale, \
+    get_screen_height, hovered, exit_app
 
 BLACK = (0, 0, 0)
 
@@ -51,9 +54,12 @@ class App:
         pygame.display.set_icon(self.ICON)
         pygame.display.set_caption(self.NAME)
 
-        # Load the image in a temp variable, then assign it to the attribute (omit long one liner)
+        # Load the image in a temp variable,
+        # then assign it to the attribute (omit long one liner)
         main_background = pygame.image.load(asset("background_menu.jpg"))
-        self.main_background = pygame.transform.scale(main_background, self.screen_size)
+        self.main_background = pygame.transform.scale(
+            main_background, self.screen_size
+        )
 
         # Bootstrap the notifications.
         self.notification = Notification(self.scale[0])
@@ -72,12 +78,16 @@ class App:
             "quit": pygame.image.load(asset('buttons/quit.png'))
         }
 
-        # Add a bit of transparency to the buttons (we'll make them more opaque when hovering it).
+        # Add a bit of transparency to the buttons,
+        # we'll make them more opaque when hovering it.
         for button in buttons.values():
             button.fill((255, 255, 255, 192), None, pygame.BLEND_RGBA_MULT)
 
         # Get the rect of each buttons
-        btns_rect = {button: buttons.get(button).get_rect() for button in buttons}
+        btns_rect = {
+            button: buttons.get(button).get_rect()
+            for button in buttons
+        }
 
         # Set the x, y coordinates of the buttons rect.
         for i, rect in enumerate(list(btns_rect.values())):
@@ -103,15 +113,17 @@ class App:
             mouse_x, mouse_y = pygame.mouse.get_pos()
 
             # The button that the mouse is hovering.
-            # When the user switch to key navigation, we'll focus the button where the mouse is hovering.
+            # When the user switch to key navigation,
+            # we'll focus the button where the mouse is hovering.
             mouse_hovering = None
 
-            # If the mouse perform an action (move or click) then leave the keyboard navigation
+            # If the mouse perform an action (move or click)
+            # then leave the keyboard navigation
             if self.mouse or mouse_x != precedent_x or mouse_y != precedent_y:
                 self.key_nav = None
 
             # PLAY button
-            if self.key_nav == 0 or (btns_rect.get('play').collidepoint((mouse_x, mouse_y)) and self.key_nav is None):
+            if (btns_rect.get('play').collidepoint((mouse_x, mouse_y)) and self.key_nav is None) or self.key_nav == 0:
                 if self.key_nav is None:
                     mouse_hovering = 0
 
@@ -121,12 +133,16 @@ class App:
                 if self.mouse or (self.key_nav is not None and self.enter_key):
                     # Initialize the game.
                     if self.game is None:
-                        self.game = Game(self.screen, self.mixer, self.notification, self.scale)
+                        self.game = Game(
+                            self.screen, self.mixer,
+                            self.notification, self.scale
+                        )
 
                     # Then execute the game loop.
                     remove_game = self.game.execute()
 
-                    # remove_game determines if we cleanup the resources that the game instance use.
+                    # remove_game determines if we cleanup the resources
+                    # that the game instance use.
                     if remove_game:
                         self.game = None
 
@@ -158,8 +174,8 @@ class App:
             self.mouse = False
             self.enter_key = False
 
-            # Assign the current mouse position.
-            # These values will determines if the mouse cursor has moved or not.
+            # Assign the current mouse position. These values will
+            # determines if the mouse cursor has moved or not.
             precedent_x, precedent_y = mouse_x, mouse_y
 
             for event in pygame.event.get():
@@ -177,7 +193,8 @@ class App:
 
                         # Stay on key navigation...
                         else:
-                            self.key_nav = 0 if self.key_nav == 2 else self.key_nav + 1
+                            self.key_nav = 0 \
+                                if self.key_nav == 2 else self.key_nav + 1
 
                     if keys[K_UP]:
                         if self.key_nav is None:
@@ -187,7 +204,8 @@ class App:
                                 self.key_nav = mouse_hovering
 
                         else:
-                            self.key_nav = 2 if self.key_nav == 0 else self.key_nav - 1
+                            self.key_nav = 2 \
+                                if self.key_nav == 0 else self.key_nav - 1
 
                     # If the user press the enter key
                     if keys[K_RETURN] or keys[K_KP_ENTER]:
